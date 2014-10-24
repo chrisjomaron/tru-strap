@@ -1,0 +1,72 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+require 'getoptlong'
+
+opts = GetoptLong.new(
+        [ '--ssh-key',            GetoptLong::OPTIONAL_ARGUMENT ],
+        [ '--vm_mem',             GetoptLong::OPTIONAL_ARGUMENT ],
+        [ '--trustrap_role',      GetoptLong::REQUIRED_ARGUMENT ],
+        [ '--trustrap_env',       GetoptLong::REQUIRED_ARGUMENT ],
+        [ '--trustrap_repouser',  GetoptLong::OPTIONAL_ARGUMENT ],
+        [ '--trustrap_reponame',  GetoptLong::OPTIONAL_ARGUMENT ],
+        [ '--trustrap_repobranch',GetoptLong::OPTIONAL_ARGUMENT ]
+)
+
+# process args
+sshkey = '~/.ssh/id_rsa'
+vm_mem =2048
+trustrap_role = 'base'
+trustrap_env  = 'dev'
+trustrap_repouser   = 'pauldavidgilligan-msm'
+trustrap_reponame   = 'msm-provisioning'
+trustrap_repobranch = 'master'
+
+opts.each do |opt, arg|
+ case opt
+   when '--ssh-key'
+    sshkey = arg
+   when '--vm_mem'
+    vm_mem = arg
+   when '--trustrap_role'
+    trustrap_role = arg
+   when '--trustrap_env'
+    trustrap_env = arg
+   when '--trustrap_repouser'
+    trustrap_repouser = arg
+   when '--trustrap_reponame'
+    trustrap_reponame = arg
+   when '--trustrap_repobranch'
+    trustrap_repobranch = arg
+ end
+end
+
+puts "-" * 20
+puts "sshkey #{sshkey}"
+puts "vm_mem #{vm_mem}"
+puts "-" * 20
+puts "trustrap_role #{trustrap_role}"
+puts "trustrap_env #{trustrap_env}"
+puts "trustrap_repouser #{trustrap_repouser}"
+puts "trustrap_reponame #{trustrap_reponame}"
+puts "trustrap_repobranch #{trustrap_repobranch}"
+puts "=" * 20
+
+
+VAGRANTFILE_API_VERSION = "2"
+
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.ssh.private_key_path = sshkey
+  config.vm.define "msmlxc" do |m|
+    m.vm.provider "docker" do |d|
+      d.has_ssh = true
+      d.build_dir = "."
+      d.build_args = ["-t=msmlxc"]
+      d.name = "msmlxc"
+      d.remains_running = false
+    end
+  end 
+end
+

@@ -41,16 +41,16 @@ opts.each do |opt, arg|
  end
 end
 
-puts "-" * 20
-puts "sshkey #{sshkey}"
-puts "vm_mem #{vm_mem}"
-puts "-" * 20
-puts "trustrap_role #{trustrap_role}"
-puts "trustrap_env #{trustrap_env}"
-puts "trustrap_repouser #{trustrap_repouser}"
-puts "trustrap_reponame #{trustrap_reponame}"
+puts "-" * 40
+puts "sshkey              #{sshkey}"
+puts "vm_mem              #{vm_mem}"
+puts "-" * 40
+puts "trustrap_role       #{trustrap_role}"
+puts "trustrap_env        #{trustrap_env}"
+puts "trustrap_repouser   #{trustrap_repouser}"
+puts "trustrap_reponame   #{trustrap_reponame}"
 puts "trustrap_repobranch #{trustrap_repobranch}"
-puts "=" * 20
+puts "=" * 40
 
 
 VAGRANTFILE_API_VERSION = "2"

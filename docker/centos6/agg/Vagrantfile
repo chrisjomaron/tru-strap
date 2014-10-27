@@ -66,6 +66,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       d.build_args = ["-t=msmlxc"]
       d.name = "msmlxc"
       d.remains_running = false
+      d.vagrant_machine = "dockerhost"
+      d.vagrant_vagrantfile = "../Vagrantfile.proxy"
     end
   end 
 end

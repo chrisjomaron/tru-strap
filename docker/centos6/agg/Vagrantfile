@@ -52,20 +52,17 @@ puts "trustrap_reponame   #{trustrap_reponame}"
 puts "trustrap_repobranch #{trustrap_repobranch}"
 puts "=" * 40
 
-
 VAGRANTFILE_API_VERSION = "2"
-
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.ssh.username = "root"
   config.ssh.private_key_path = sshkey
   config.vm.define "msmlxc" do |m|
     m.vm.provider "docker" do |d|
-      d.has_ssh = true
       d.build_dir = "."
-      d.build_args = ["-t=msmlxc"]
-      d.name = "msmlxc"
       d.remains_running = false
+      d.has_ssh = true
       d.vagrant_machine = "dockerhost"
       d.vagrant_vagrantfile = "../Vagrantfile.proxy"
     end

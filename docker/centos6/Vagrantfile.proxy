@@ -16,9 +16,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
  
   config.vm.define "dockerhost"
-  config.vm.box = "ubuntu/trusty64"
-  config.vm.network "forwarded_port",
-    guest: 8080, host: 8080
+  config.vm.box = "centos/centos6"
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
  
   config.vm.provider :virtualbox do |vb|
       vb.name = "dockerhost"

@@ -25,7 +25,7 @@ RUN yum install -y --enablerepo=centosplus \
 # -----------------------------------------------------------------------------
 # Ruby Support
 # -----------------------------------------------------------------------------
-yum install -y libyaml-devel libffi-devel readline-devel zlib-devel openssl-devel
+RUN yum install -y libyaml-devel libffi-devel readline-devel zlib-devel openssl-devel
 
 # -----------------------------------------------------------------------------
 # Install supervisord (required to run more than a single process in a container)

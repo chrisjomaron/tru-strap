@@ -38,9 +38,9 @@ if [[ ! -d ${OPTS_SSH_USER_HOME_DIR}/.ssh ]]; then
 	chown -R ${OPTS_SSH_USER}:${OPTS_SSH_USER} ${OPTS_SSH_USER_HOME_DIR}/.ssh
 	chmod 600 ${OPTS_SSH_USER_HOME_DIR}/.ssh/authorized_keys
 
-	
+        # Sudo options
 	echo $'\n# ${OPTS_SSH_USER}\nDefaults:root secure_path = /sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin' >> /etc/sudoers
-	#echo 'Defaults:root !requiretty' >> /etc/sudoers
+        echo "${OPTS_SSH_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 	# Set user passwords
 	echo "root:${OPTS_SSH_ROOT_PASSWORD}" | chpasswd

@@ -6,6 +6,7 @@ MAINTAINER Paul Gilligan<Paul.Gilligan@moneysupermarket.com>
 # -----------------------------------------------------------------------------
 RUN yum update -y
 RUN yum install -y http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+RUN yum groupinstall -y development
 
 # -----------------------------------------------------------------------------
 # Base Install
@@ -13,6 +14,7 @@ RUN yum install -y http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/e
 RUN yum install -y --enablerepo=centosplus \
 	vim-minimal \
 	sudo \
+        git \
 	openssh \
 	openssh-server \
 	openssh-clients \

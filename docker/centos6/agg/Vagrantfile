@@ -61,12 +61,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       d.build_args = ["--tag=msm-#{trustrap_tag}"]
       d.remains_running = false
       d.has_ssh = true
-      #d.vagrant_machine = "dockerhost"
-      #d.vagrant_vagrantfile = "../Vagrantfile.proxy"
+      d.vagrant_machine = "dockerhost"
+      d.vagrant_vagrantfile = "../Vagrantfile.proxy"
     end
   end 
-# config.vm.provision :shell, :path => "../../../init.sh", :args => trustrap_args
-  config.vm.provision :shell, inline: "echo Hello, World"
+  config.vm.provision :shell, :path => "../../../init.sh", :args => trustrap_args
+# config.vm.provision :shell, inline: "echo Hello, World"
 end
 
 

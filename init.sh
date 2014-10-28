@@ -84,8 +84,8 @@ rvm install 2.1.0
 rvm use ruby
 
 _echo "Installing puppet. Cloning repository to ${REPODIR}"
-yum install -y http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm > /dev/null
-yum install -y puppet > /dev/null
+yum install -y http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm 
+yum install -y puppet 
 git clone -b ${trustrap_repobranch} git@github.com:${trustrap_repouser}/${trustrap_reponame}.git $REPODIR
 gem install hiera-eyaml --no-ri --no-rdoc
 

@@ -23,6 +23,11 @@ RUN yum install -y --enablerepo=centosplus \
 	&& yum clean all
 
 # -----------------------------------------------------------------------------
+# Ruby Support
+# -----------------------------------------------------------------------------
+yum install -y libyaml-devel libffi-devel readline-devel zlib-devel openssl-devel
+
+# -----------------------------------------------------------------------------
 # Install supervisord (required to run more than a single process in a container)
 # Note: EPEL package lacks /usr/bin/pidproxy
 # We require supervisor-stdout to allow output of services started by 

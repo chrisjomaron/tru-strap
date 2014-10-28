@@ -13,12 +13,10 @@ RUN yum install -y http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/e
 RUN yum install -y --enablerepo=centosplus \
 	vim-minimal \
 	sudo \
-        wget \
 	openssh \
 	openssh-server \
 	openssh-clients \
 	python-pip \
-	&& yum -y update bash \
 	&& rm -rf /var/cache/yum/* \
 	&& yum clean all
 

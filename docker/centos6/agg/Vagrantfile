@@ -1,6 +1,8 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+require 'yaml'
+
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
 
 VAGRANTFILE_API_VERSION = "2"

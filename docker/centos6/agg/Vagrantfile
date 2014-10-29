@@ -7,62 +7,64 @@ VAGRANTFILE_API_VERSION = "2"
 
 require 'getoptlong'
 opts = GetoptLong.new(
-        [ '--trustrap_role',      GetoptLong::REQUIRED_ARGUMENT ],
-        [ '--trustrap_env',       GetoptLong::REQUIRED_ARGUMENT ],
-        [ '--trustrap_repouser',  GetoptLong::OPTIONAL_ARGUMENT ],
-        [ '--trustrap_reponame',  GetoptLong::OPTIONAL_ARGUMENT ],
-        [ '--trustrap_repobranch',GetoptLong::OPTIONAL_ARGUMENT ]
+        [ '--TRUSTRAP_SERVICE',   GetoptLong::REQUIRED_ARGUMENT ],
+        [ '--TRUSTRAP_ENV',       GetoptLong::REQUIRED_ARGUMENT ],
+        [ '--TRUSTRAP_REPOUSER',  GetoptLong::OPTIONAL_ARGUMENT ],
+        [ '--TRUSTRAP_REPONAME',  GetoptLong::OPTIONAL_ARGUMENT ],
+        [ '--TRUSTRAP_REPOBRANCH',GetoptLong::OPTIONAL_ARGUMENT ]
 )
 
 # process args
-trustrap_role = 'base'
-trustrap_env  = 'dev'
-trustrap_repouser   = 'pauldavidgilligan-msm'
-trustrap_reponame   = 'msm-provisioning'
-trustrap_repobranch = 'handsome-vagrant-docker'
+TRUSTRAP_SERVICE = 'agg-local'
+TRUSTRAP_ENV = 'dev'
+TRUSTRAP_REPOUSER   = 'pauldavidgilligan-msm'
+TRUSTRAP_REPONAME   = 'msm-provisioning'
+TRUSTRAP_REPOBRANCH = 'handsome-vagrant-docker'
 
 opts.each do |opt, arg|
  case opt
-   when '--trustrap_role'
-    trustrap_role = arg
-   when '--trustrap_env'
-    trustrap_env = arg
-   when '--trustrap_repouser'
-    trustrap_repouser = arg
-   when '--trustrap_reponame'
-    trustrap_reponame = arg
-   when '--trustrap_repobranch'
-    trustrap_repobranch = arg
+   when '--TRUSTRAP_SERVICE'
+    TRUSTRAP_SERVICE = arg
+   when '--TRUSTRAP_ENV'
+    TRUSTRAP_ENV = arg
+   when '--TRUSTRAP_REPOUSER'
+    TRUSTRAP_REPOUSER = arg
+   when '--TRUSTRAP_REPONAME'
+    TRUSTRAP_REPONAME = arg
+   when '--TRUSTRAP_REPOBRANCH'
+    TRUSTRAP_REPOBRANCH = arg
  end
 end
 
 puts "-" * 40
 puts "TRUSTRAP, vagrant docker provisioning"
 puts "-" * 40
-puts "trustrap_role       #{trustrap_role}"
-puts "trustrap_env        #{trustrap_env}"
-puts "trustrap_repouser   #{trustrap_repouser}"
-puts "trustrap_reponame   #{trustrap_reponame}"
-puts "trustrap_repobranch #{trustrap_repobranch}"
+puts "TRUSTRAP_SERVICE    #{TRUSTRAP_SERVICE}"
+puts "TRUSTRAP_ENV        #{TRUSTRAP_ENV}"
+puts "TRUSTRAP_REPOUSER   #{TRUSTRAP_REPOUSER}"
+puts "TRUSTRAP_REPONAME   #{TRUSTRAP_REPONAME}"
+puts "TRUSTRAP_REPOBRANCH #{TRUSTRAP_REPOBRANCH}"
 puts "=" * 40
 
-trustrap_args = "--role #{trustrap_role} --environment #{trustrap_env} --repouser #{trustrap_repouser} --reponame #{trustrap_reponame} --repobranch #{trustrap_repobranch}"
-trustrap_tag = "#{trustrap_env}-#{trustrap_role}"
+# this is made to be somewhat backwards compatible.
+# ./init.sh -s agg -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
+TRUSTRAP_args = "-s #{TRUSTRAP_SERVICE} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
+TRUSTRAP_tag = "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.username = "dev-opts"
   config.ssh.pty = true
-  config.vm.define "#{trustrap_tag}" do |m|
+  config.vm.define "#{TRUSTRAP_tag}" do |m|
     m.vm.provider "docker" do |d|
       d.has_ssh = true
       d.build_dir = "."
-      d.build_args = ["--tag=msm-#{trustrap_tag}"]
+      d.build_args = ["--tag=msm-#{TRUSTRAP_tag}"]
       d.create_args = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
       d.vagrant_machine = "dockerhost"
       d.vagrant_vagrantfile = "../Vagrantfile.proxy"
     end
   end 
-  config.vm.provision :shell, :path => "../../../init.sh", :args => trustrap_args
+  config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_args
 end
 
 

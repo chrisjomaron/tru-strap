@@ -6,7 +6,11 @@ MAINTAINER Paul Gilligan<Paul.Gilligan@moneysupermarket.com>
 # -----------------------------------------------------------------------------
 RUN yum update -y
 RUN yum install -y http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
-RUN yum groupinstall -y development
+
+# -----------------------------------------------------------------------------
+# GPG Key Updates
+# -----------------------------------------------------------------------------
+RUN gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
 
 # -----------------------------------------------------------------------------
 # Base Install
@@ -14,6 +18,7 @@ RUN yum groupinstall -y development
 RUN yum install -y --enablerepo=centosplus \
 	vim-minimal \
 	sudo \
+        tar \
         git \
 	openssh \
 	openssh-server \
@@ -65,7 +70,7 @@ RUN sed -i 's/^# %wheel\tALL=(ALL)\tALL/%wheel\tALL=(ALL)\tALL/g' /etc/sudoers
 RUN mkdir -p /etc/services-config/{supervisor,ssh}
 
 # -----------------------------------------------------------------------------
-# Copy files into place
+# Copy SSH files into place
 # -----------------------------------------------------------------------------
 ADD etc/ssh-bootstrap /etc/
 ADD etc/services-config/ssh/authorized_keys /etc/services-config/ssh/

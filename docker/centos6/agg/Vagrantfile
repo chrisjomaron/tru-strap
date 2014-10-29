@@ -1,12 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-VAGRANTFILE_API_VERSION = "2"
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
+
+VAGRANTFILE_API_VERSION = "2"
 
 require 'getoptlong'
 opts = GetoptLong.new(
-        [ '--vm_mem',             GetoptLong::OPTIONAL_ARGUMENT ],
         [ '--trustrap_role',      GetoptLong::REQUIRED_ARGUMENT ],
         [ '--trustrap_env',       GetoptLong::REQUIRED_ARGUMENT ],
         [ '--trustrap_repouser',  GetoptLong::OPTIONAL_ARGUMENT ],
@@ -15,7 +15,6 @@ opts = GetoptLong.new(
 )
 
 # process args
-vm_mem =2048
 trustrap_role = 'base'
 trustrap_env  = 'dev'
 trustrap_repouser   = 'pauldavidgilligan-msm'
@@ -24,8 +23,6 @@ trustrap_repobranch = 'handsome-vagrant-docker'
 
 opts.each do |opt, arg|
  case opt
-   when '--vm_mem'
-    vm_mem = arg
    when '--trustrap_role'
     trustrap_role = arg
    when '--trustrap_env'
@@ -40,7 +37,7 @@ opts.each do |opt, arg|
 end
 
 puts "-" * 40
-puts "vm_mem              #{vm_mem}"
+puts "TRUSTRAP, vagrant docker provistioning"
 puts "-" * 40
 puts "trustrap_role       #{trustrap_role}"
 puts "trustrap_env        #{trustrap_env}"
@@ -57,10 +54,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.pty = true
   config.vm.define "#{trustrap_tag}" do |m|
     m.vm.provider "docker" do |d|
+      d.has_ssh = true
       d.build_dir = "."
       d.build_args = ["--tag=msm-#{trustrap_tag}"]
-      d.remains_running = false
-      d.has_ssh = true
+      d.create_args = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
       d.vagrant_machine = "dockerhost"
       d.vagrant_vagrantfile = "../Vagrantfile.proxy"
     end

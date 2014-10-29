@@ -15,7 +15,7 @@ opts = GetoptLong.new(
 )
 
 # process args
-TRUSTRAP_SERVICE = 'agg-local'
+TRUSTRAP_SERVICE = 'agg'
 TRUSTRAP_ENV = 'dev'
 TRUSTRAP_REPOUSER   = 'pauldavidgilligan-msm'
 TRUSTRAP_REPONAME   = 'msm-provisioning'

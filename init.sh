@@ -21,7 +21,46 @@ SCRIPTNAME=`basename $0`
 RUBYVERSION="ruby-2.1.4"
 TRUSTRAP_REPOPRIVKEYFILE="~/.ssh/id_rsa"
 
-source func.sh
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+function _line {
+  length=40
+  printf -v line '%*s' "$length"
+  echo ${line// /=}
+}
+
+function _bold {
+  echo -e "\e[30;1m$1 \e[21m"
+}
+
+function _err {
+  length=40
+  printf -v line '%*s' "$length"
+  echo ${line// /-}
+  echo -e "\e[31m$1 \e[39m"
+}
+
+# functions
+function usage {
+cat <<EOF
+
+    Usage: $0 [options]
+    -h| --help             this usage text.
+    -v| --version          the version.
+    -s| --service          the Service name, e.g. agg, aem, services.
+    -e| --environment      the environment name.
+    -u| --repouser         the git repository user name.
+    -n| --reponame         the git repository name.
+    -b| --repobranch       the git repository branch name.
+    -k| --repoprivkeyfile  your git repository private key file
+    
+EOF
+}
+
+function print_version {
+  echo $1 $2
+}
 
 # -----------------------------------------------------------------------------
 # Process Command Line Params

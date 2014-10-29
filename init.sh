@@ -21,46 +21,7 @@ SCRIPTNAME=`basename $0`
 RUBYVERSION="ruby-2.1.4"
 TRUSTRAP_REPOPRIVKEYFILE="~/.ssh/id_rsa"
 
-# -----------------------------------------------------------------------------
-# Functions
-# -----------------------------------------------------------------------------
-function _line {
-  length=40
-  printf -v line '%*s' "$length"
-  echo ${line// /=}
-}
-
-function _bold {
-  echo -e "\e[1m$1 \e[21m"
-}
-
-function _err {
-  length=40
-  printf -v line '%*s' "$length"
-  echo ${line// /-}
-  echo -e "\e[31m$1 \e[39m"
-}
-
-# functions
-function usage {
-cat <<EOF
-
-    Usage: $0 [options]
-    -h| --help             this usage text.
-    -v| --version          the version.
-    -s| --service          the Service name, e.g. agg, aem, services.
-    -e| --environment      the environment name.
-    -u| --repouser         the git repository user name.
-    -n| --reponame         the git repository name.
-    -b| --repobranch       the git repository branch name.
-    -k| --repoprivkeyfile  your git repository private key file
-    
-EOF
-}
-
-function print_version {
-  echo $1 $2
-}
+source func.sh
 
 # -----------------------------------------------------------------------------
 # Process Command Line Params
@@ -120,9 +81,12 @@ if [[ ${TRUSTRAP_SERVICE} == "" || ${TRUSTRAP_ENV} == "" || ${TRUSTRAP_REPOUSER}
   exit 1
 fi
 
-if [[ ${TRUSTRAP_SERVICE} != "agg" || ${TRUSTRAP_SERVICE} != "aem" || ${TRUSTRAP_SERVICE} != "services" ]] ; then
-        _err ", service argument must be string [agg] or [aem] or [services]."
-        exit 1
+valid_services=('agg', 'aem', 'services')
+if echo "${valid_services[@]}" | fgrep --word-regexp "${TRUSTRAP_SERVICE}"; then
+  _bold "Building service for ${TRUSTRAP_SERVICE}" 
+else
+  _err "Service ${TRUSTRAP_SERVICE} not valid, must be one of ${valid_services[*]}!" 
+  exit 1
 fi
 
 # -----------------------------------------------------------------------------

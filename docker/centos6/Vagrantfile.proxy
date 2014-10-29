@@ -37,7 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       v.customize ["modifyvm", :id, "--memory", [ENV['TRUSTRAP_VM_MEM'].to_i, 1024].max]
  
       # Who has a single core cpu these days anyways?
-      cpu_count = 2
+      cpu_count = 4
 
       # Determine the available cores in host system.
       if RUBY_PLATFORM =~ /linux/

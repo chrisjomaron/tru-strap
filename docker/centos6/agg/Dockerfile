@@ -8,11 +8,6 @@ RUN yum update -y
 RUN yum install -y http://www.mirrorservice.org/sites/dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
 
 # -----------------------------------------------------------------------------
-# GPG Key Updates
-# -----------------------------------------------------------------------------
-RUN gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
-
-# -----------------------------------------------------------------------------
 # Base Install
 # -----------------------------------------------------------------------------
 RUN yum install -y --enablerepo=centosplus \

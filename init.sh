@@ -1,16 +1,44 @@
 #!/bin/bash
+#
+# init.sh       Provision MSM/TSM trustrap services.
+#
+# Authors:      Jim Davies, <Jim.Davies@moneysupermarket.com>
+#               Paul Gilligan, <Paul.Gilligan@moneysupermarket.com>
+#
+# Description:  Install MSM/TSM based puppet provisioning software and provision
+#               the required service (agg, aem, services, etc). This script has 
+#               been modified from the original concept to allow many applications
+#               to be provisioned under a vagrant/docker hosted solution.
+# 
+# Original:     https://github.com/MSMFG/tru-strap
+# Git version:  https://github.com/pauldavidgilligan-msm/tru-strap
+# Git branch:   handsome-vagrant-docker
 
-# Usage: ./init.sh -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
+# Usage:        ./init.sh -s agg -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
 
 VERSION=0.0.2
 SCRIPTNAME=`basename $0`
+RUBYVERSION="ruby-2.1.4"
+TRUSTRAP_REPOPRIVKEYFILE="~/.ssh/id_rsa"
 
-function _echo {
-  tput sgr0
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+function _line {
+  length=40
+  printf -v line '%*s' "$length"
+  echo ${line// /=}
+}
+
+function _bold {
+  echo -e "\e[1m$1 \e[21m"
+}
+
+function _err {
   length=40
   printf -v line '%*s' "$length"
   echo ${line// /-}
-  echo -e "\e[0;32m$1 \e[0m"
+  echo -e "\e[31m$1 \e[39m"
 }
 
 # functions
@@ -18,13 +46,14 @@ function usage {
 cat <<EOF
 
     Usage: $0 [options]
-    -h| --help           this usage text.
-    -v| --version        the version.
-    -r| --role           the role name.
-    -e| --environment    the environment name.
-    -u| --repouser       the git repository user name.
-    -n| --reponame       the git repository name.
-    -b| --repobranch     the git repository branch name.
+    -h| --help             this usage text.
+    -v| --version          the version.
+    -s| --service          the Service name, e.g. agg, aem, services.
+    -e| --environment      the environment name.
+    -u| --repouser         the git repository user name.
+    -n| --reponame         the git repository name.
+    -b| --repobranch       the git repository branch name.
+    -k| --repoprivkeyfile  your git repository private key file
     
 EOF
 }
@@ -33,7 +62,10 @@ function print_version {
   echo $1 $2
 }
 
-# Process command line params
+# -----------------------------------------------------------------------------
+# Process Command Line Params
+# -----------------------------------------------------------------------------
+_line
 while test -n "$1"; do
   case "$1" in
   --help|-h)
@@ -44,29 +76,33 @@ while test -n "$1"; do
     print_version $SCRIPTNAME $VERSION
     exit
     ;;
-  --role|-r)
-    trustrap_role=$2
+  --service|-s)
+    TRUSTRAP_SERVICE=$2
     shift
     ;;
   --environment|-e)
-    trustrap_env=$2
+    TRUSTRAP_ENV=$2
     shift
     ;;
   --repouser|-u)
-    trustrap_repouser=$2
+    TRUSTRAP_REPOUSER=$2
     shift
     ;;
   --reponame|-n)
-    trustrap_reponame=$2
+    TRUSTRAP_REPONAME=$2
     shift
     ;;
   --repobranch|-b)
-    trustrap_repobranch=$2
+    TRUSTRAP_REPOBRANCH=$2
+    shift
+    ;;
+  --repoprivkeyfile|-k)
+    TRUSTRAP_REPOPRIVKEYFILE=$2
     shift
     ;;
 
   *)
-    echo "Unknown argument: $1"
+    _err ", unknown argument: $1"
     usage
     exit 1
     ;;
@@ -74,20 +110,41 @@ while test -n "$1"; do
   shift
 done
 
-_echo "Running ${SCRIPTNAME}."
-REPODIR="/opt/${trustrap_reponame}"
+# -----------------------------------------------------------------------------
+# Check
+# -----------------------------------------------------------------------------
+_bold "Verifying ${SCRIPTNAME}."
+if [[ ${TRUSTRAP_SERVICE} == "" || ${TRUSTRAP_ENV} == "" || ${TRUSTRAP_REPOUSER} == "" || ${TRUSTRAP_REPONAME} == "" || ${TRUSTRAP_REPOBRANCH} == "" || ${TRUSTRAP_REPOPRIVKEYFILE} == "" ]]; then
+  _err ", missing argument(s)."
+  usage
+  exit 1
+fi
 
-_echo "Installing RVM."
+if [[ ${TRUSTRAP_SERVICE} != "agg" || ${TRUSTRAP_SERVICE} != "aem" || ${TRUSTRAP_SERVICE} != "services" ]] ; then
+        _err ", service argument must be string [agg] or [aem] or [services]."
+        exit 1
+fi
+
+# -----------------------------------------------------------------------------
+# Run 
+# -----------------------------------------------------------------------------
+_bold "Running ${SCRIPTNAME}."
+TRUSTRAP_REPODIR="/opt/${TRUSTRAP_REPONAME}"
+
+_bold "Installing RVM."
+gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
 curl -L get.rvm.io | bash -s stable
 source /etc/profile.d/rvm.sh
 rvm reload
-rvm install 2.1.0 
-rvm use ruby
+rvm install ${RUBYVERSION}
+rvm use ${RUBYVERSION}
 
-_echo "Installing puppet. Cloning repository to ${REPODIR}"
+_bold "Installing puppet. Cloning repository to ${REPODIR}"
 yum install -y http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm 
 yum install -y puppet 
-git clone -b ${trustrap_repobranch} git@github.com:${trustrap_repouser}/${trustrap_reponame}.git $REPODIR
+yum install -y facter
+git clone -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git $TRUSTRAP_REPODIR
+gem install librarian-puppet --no-rdoc --no-ri --force
 gem install hiera-eyaml --no-ri --no-rdoc
 
 

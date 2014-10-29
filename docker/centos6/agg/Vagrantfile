@@ -37,7 +37,7 @@ opts.each do |opt, arg|
 end
 
 puts "-" * 40
-puts "TRUSTRAP, vagrant docker provistioning"
+puts "TRUSTRAP, vagrant docker provisioning"
 puts "-" * 40
 puts "trustrap_role       #{trustrap_role}"
 puts "trustrap_env        #{trustrap_env}"

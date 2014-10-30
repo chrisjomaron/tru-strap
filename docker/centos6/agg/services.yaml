@@ -11,16 +11,16 @@ services:
       - data                        : agg-mongodb
         enabled                     : true
       - data                        : agg-lts-mongodb
-        enabled                     : true
+        enabled                     : false
       - data                        : agg-redis
-        enabled                     : true
+        enabled                     : false
       - app                         : agg-management-agent
-        enabled                     : true
+        enabled                     : false
       - app                         : agg-private-api
-        enabled                     : true
+        enabled                     : false
       - app                         : agg-public-api
-        enabled                     : true
+        enabled                     : false
       - app                         : agg-performance-test-proxy
         enabled                     : false
       - app                         : agg_kafka
-        enabled                     : true
+        enabled                     : false

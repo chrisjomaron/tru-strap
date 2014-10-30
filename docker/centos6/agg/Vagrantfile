@@ -90,14 +90,14 @@ services.each do |service, params|
                 m.vm.provider "docker" do |vm|
                   vm.has_ssh = true
                   vm.build_dir = "."
-                  vm.build_args = ["--tag=#{_tag}"]
+                  vm.build_args = ["--tag=#{_tag} --hostname#{_tag}"]
                   vm.create_args = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end
               end 
-             config.vm.provision "shell", inline: "echo hello from node #{_tag}"
-              #config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
+             config.vm.provision "shell", inline: "echo node #{_tag} is very handsome!"
+             config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
             end
           end
         end 
@@ -114,14 +114,14 @@ services.each do |service, params|
                 m.vm.provider "docker" do |vm|
                   vm.has_ssh = true
                   vm.build_dir = "."
-                  vm.build_args = ["--tag=#{_tag}"]
+                  vm.build_args = ["--tag=#{_tag} --hostname#{_tag}"]
                   vm.create_args = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end
               end
-
-              #config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
+              config.vm.provision "shell", inline: "echo node #{_tag}  is very handsome!"
+              config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
             end
           end
         end

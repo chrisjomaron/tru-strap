@@ -74,10 +74,11 @@ services.each do |service, params|
       # ./init.sh -s agg -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
       TRUSTRAP_ARGS = "-s #{TRUSTRAP_SERVICE} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
     
-      # provision data
+      # provision multi-machines
       rls.each do |key, value|
         data_set =  value.select {|d| d['data']}
         app_set  =  value.select {|a| a['app']}
+        # provision data
         data_set.each do |d|
           if d['enabled'] 
             @tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{d['data']}"
@@ -103,31 +104,29 @@ services.each do |service, params|
         # provision apps
         app_set.each do |a|
           if a['enabled']
-            puts "Provisioning Docker(enabled) role [#{a['app']}] for app tier."
+            @tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{a['app']}"
+            puts "Provisioning Docker(enabled) role [#{@tag}] for app tier."
+            Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+              config.ssh.username = "dev-opts"
+              config.ssh.pty = true
+              config.vm.define "#{@tag}" do |m|
+                m.vm.provider "docker" do |vm|
+                  vm.has_ssh = true
+                  vm.build_dir = "."
+                  vm.build_args = ["--tag=#{@tag}"]
+                  vm.create_args = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
+                  vm.vagrant_machine = "dockerhost"
+                  vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
+                end
+              end
+              #config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
+            end
           end
-        end 
+        end
 
-      end
+      end # rls.each do |key, value|
   else
     abort("Service variable: #{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE} is not set in file #{YAML_OPTIONS}, exiting ...")
   end
 end
-
-
-
-#Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-#  config.ssh.username = "dev-opts"
-#  config.ssh.pty = true
-#  config.vm.define "#{TRUSTRAP_TAG}" do |m|
-#    m.vm.provider "docker" do |d|
-#      d.has_ssh = true
-#      d.build_dir = "."
-#      d.build_args = ["--tag=msm-#{TRUSTRAP_TAG}"]
-#      d.create_args = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
-#      d.vagrant_machine = "dockerhost"
-#      d.vagrant_vagrantfile = "../Vagrantfile.proxy"
-#    end
-#  end 
-#  config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
-#end
 

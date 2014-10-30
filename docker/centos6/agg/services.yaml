@@ -15,12 +15,12 @@ services:
       - data                        : agg-redis
         enabled                     : true
       - app                         : agg-management-agent
-        enabled                     : false
+        enabled                     : true
       - app                         : agg-private-api
-        enabled                     : false
+        enabled                     : true
       - app                         : agg-public-api
-        enabled                     : false
+        enabled                     : true
       - app                         : agg-performance-test-proxy
         enabled                     : false
       - app                         : agg_kafka
-        enabled                     : false
+        enabled                     : true

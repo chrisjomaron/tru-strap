@@ -70,12 +70,31 @@ services.each do |service, params|
       puts "TRUSTRAP_REPOBRANCH   #{TRUSTRAP_REPOBRANCH}"
       puts "=" * 40
 
+      # this is made to be somewhat backwards compatible.
+      # ./init.sh -s agg -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
+      TRUSTRAP_ARGS = "-s #{TRUSTRAP_SERVICE} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
       rls.each do |key, value|
         data_set =  value.select {|d| d['data']}
         app_set  =  value.select {|a| a['app']}
         data_set.each do |d|
           if d['enabled'] 
+            TRUSTRAP_TAG  = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{d['data']}"
             puts "Provisioning Docker(enabled) role [#{d['data']}] for data tier."
+            Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+              config.ssh.username = "dev-opts"
+              config.ssh.pty = true
+              config.vm.define "#{TRUSTRAP_TAG}" do |m|
+                m.vm.provider "docker" do |vm|
+                  vm.has_ssh = true
+                  vm.build_dir = "."
+                  vm.build_args = ["--tag=msm-#{TRUSTRAP_TAG}"]
+                  vm.create_args = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
+                  vm.vagrant_machine = "dockerhost"
+                  vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
+                end
+              end 
+              #  config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
+            end
           end
         end 
         app_set.each do |a|
@@ -91,13 +110,6 @@ services.each do |service, params|
 end
 
 
-# -----------------------------------------------------------------------------
-# Calculated Options
-# -----------------------------------------------------------------------------
-# this is made to be somewhat backwards compatible.
-# ./init.sh -s agg -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
-#TRUSTRAP_ARGS = "-s #{TRUSTRAP_SERVICE} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
-#TRUSTRAP_TAG  = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
 
 #Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 #  config.ssh.username = "dev-opts"

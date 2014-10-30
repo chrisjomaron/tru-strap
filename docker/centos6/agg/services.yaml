@@ -1,0 +1,26 @@
+services:
+  dev-agg:
+    - dns:
+      - dns-1 : "8.8.8.8"
+      - dns-2 : "4.4.4.4"
+    - git:
+      - reponame   : msm-provisioning
+      - repouser   : pauldavidgilligan-msm
+      - repobranch : handsome-vagrant-docker
+    - roles:
+      - data                        : agg-mongodb
+        enabled                     : true
+      - data                        : agg-lts-mongodb
+        enabled                     : false
+      - data                        : agg-redis
+        enabled                     : false
+      - app                         : agg-management-agent
+        enabled                     : false
+      - app                         : agg-private-api
+        enabled                     : false
+      - app                         : agg-public-api
+        enabled                     : false
+      - app                         : agg-performance-test-proxy
+        enabled                     : false
+      - app                         : agg_kafka
+        enabled                     : true

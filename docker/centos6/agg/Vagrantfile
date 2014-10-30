@@ -3,70 +3,115 @@
 
 require 'yaml'
 
-ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
-
+YAML_OPTIONS = "services.yaml"
 VAGRANTFILE_API_VERSION = "2"
 
-require 'getoptlong'
-opts = GetoptLong.new(
-        [ '--TRUSTRAP_SERVICE',   GetoptLong::REQUIRED_ARGUMENT ],
-        [ '--TRUSTRAP_ENV',       GetoptLong::REQUIRED_ARGUMENT ],
-        [ '--TRUSTRAP_REPOUSER',  GetoptLong::OPTIONAL_ARGUMENT ],
-        [ '--TRUSTRAP_REPONAME',  GetoptLong::OPTIONAL_ARGUMENT ],
-        [ '--TRUSTRAP_REPOBRANCH',GetoptLong::OPTIONAL_ARGUMENT ]
-)
+# -----------------------------------------------------------------------------
+# Environment Options
+# -----------------------------------------------------------------------------
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
 
-# process args
-TRUSTRAP_SERVICE = 'agg'
-TRUSTRAP_ENV = 'dev'
-TRUSTRAP_REPOUSER   = 'pauldavidgilligan-msm'
-TRUSTRAP_REPONAME   = 'msm-provisioning'
-TRUSTRAP_REPOBRANCH = 'handsome-vagrant-docker'
-
-opts.each do |opt, arg|
- case opt
-   when '--TRUSTRAP_SERVICE'
-    TRUSTRAP_SERVICE = arg
-   when '--TRUSTRAP_ENV'
-    TRUSTRAP_ENV = arg
-   when '--TRUSTRAP_REPOUSER'
-    TRUSTRAP_REPOUSER = arg
-   when '--TRUSTRAP_REPONAME'
-    TRUSTRAP_REPONAME = arg
-   when '--TRUSTRAP_REPOBRANCH'
-    TRUSTRAP_REPOBRANCH = arg
- end
+if ENV['TRUSTRAP_ACCOUNT']
+    TRUSTRAP_ACCOUNT = ENV['TRUSTRAP_ACCOUNT']
+else
+  abort("Environment variable: 'TRUSTRAP_ACCOUNT' is not set, exiting ...")
 end
 
+if ENV['TRUSTRAP_USERBASE']
+    TRUSTRAP_USERBASE = ENV['TRUSTRAP_USERBASE']
+else
+  abort("Environment variable: 'TRUSTRAP_USERBASE' is not set, exiting ...")
+end
+
+if ENV['TRUSTRAP_ENV']
+    TRUSTRAP_ENV = ENV['TRUSTRAP_ENV']
+else
+  abort("Environment variable: 'TRUSTRAP_ENV' is not set, exiting ...")
+end
+
+if ENV['TRUSTRAP_SERVICE']
+    TRUSTRAP_SERVICE = ENV['TRUSTRAP_SERVICE']
+else
+  abort("Environment variable: 'TRUSTRAP_SERVICE' is not set, exiting ...")
+end
+
+# -----------------------------------------------------------------------------
+# Environment Options
+# -----------------------------------------------------------------------------
 puts "-" * 40
 puts "TRUSTRAP, vagrant docker provisioning"
 puts "-" * 40
-puts "TRUSTRAP_SERVICE    #{TRUSTRAP_SERVICE}"
-puts "TRUSTRAP_ENV        #{TRUSTRAP_ENV}"
-puts "TRUSTRAP_REPOUSER   #{TRUSTRAP_REPOUSER}"
-puts "TRUSTRAP_REPONAME   #{TRUSTRAP_REPONAME}"
-puts "TRUSTRAP_REPOBRANCH #{TRUSTRAP_REPOBRANCH}"
-puts "=" * 40
+puts "TRUSTRAP_ACCOUNT      #{TRUSTRAP_ACCOUNT}"
+puts "TRUSTRAP_USERBASE     #{TRUSTRAP_USERBASE}"
+puts "TRUSTRAP_ENV          #{TRUSTRAP_ENV}"
+puts "TRUSTRAP_SERVICE      #{TRUSTRAP_SERVICE}"
 
-# this is made to be somewhat backwards compatible.
-# ./init.sh -s agg -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
-TRUSTRAP_args = "-s #{TRUSTRAP_SERVICE} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
-TRUSTRAP_tag = "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
+# -----------------------------------------------------------------------------
+# Yaml Options
+# -----------------------------------------------------------------------------
+config_options = YAML.load_file(YAML_OPTIONS)
+services = config_options['services']
+services.each do |service, params|
+  if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
+      puts "-" * 40
+      puts "Processing service options for [#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}]." 
+      dns = params.detect {|param| param['dns']}
+      TRUSTRAP_DNS_ARG = "\"--dns=#{dns['dns'][0]['dns-1']}\", \"--dns=#{dns['dns'][1]['dns-2']}\""
+      puts "Setting Docker DNS to #{TRUSTRAP_DNS_ARG}"
+      git = params.detect {|param| param['git']}
+      TRUSTRAP_REPONAME   = "#{git['git'][0]['reponame']}"
+      TRUSTRAP_REPOUSER   = "#{git['git'][1]['repouser']}"
+      TRUSTRAP_REPOBRANCH = "#{git['git'][2]['repobranch']}"
+      rls = params.detect {|param| param['roles']}
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.ssh.username = "dev-opts"
-  config.ssh.pty = true
-  config.vm.define "#{TRUSTRAP_tag}" do |m|
-    m.vm.provider "docker" do |d|
-      d.has_ssh = true
-      d.build_dir = "."
-      d.build_args = ["--tag=msm-#{TRUSTRAP_tag}"]
-      d.create_args = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
-      d.vagrant_machine = "dockerhost"
-      d.vagrant_vagrantfile = "../Vagrantfile.proxy"
-    end
-  end 
-  config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_args
+      puts "-" * 40
+      puts "TRUSTRAP_REPOUSER     #{TRUSTRAP_REPOUSER}"
+      puts "TRUSTRAP_REPONAME     #{TRUSTRAP_REPONAME}"
+      puts "TRUSTRAP_REPOBRANCH   #{TRUSTRAP_REPOBRANCH}"
+      puts "=" * 40
+
+      rls.each do |key, value|
+        data_set =  value.select {|d| d['data']}
+        app_set  =  value.select {|a| a['app']}
+        data_set.each do |d|
+          if d['enabled'] 
+            puts "Provisioning Docker(enabled) role [#{d['data']}] for data tier."
+          end
+        end 
+        app_set.each do |a|
+          if a['enabled']
+            puts "Provisioning Docker(enabled) role [#{a['app']}] for app tier."
+          end
+        end 
+
+      end
+  else
+    abort("Service variable: #{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE} is not set in file #{YAML_OPTIONS}, exiting ...")
+  end
 end
 
+
+# -----------------------------------------------------------------------------
+# Calculated Options
+# -----------------------------------------------------------------------------
+# this is made to be somewhat backwards compatible.
+# ./init.sh -s agg -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
+#TRUSTRAP_ARGS = "-s #{TRUSTRAP_SERVICE} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
+#TRUSTRAP_TAG  = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
+
+#Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+#  config.ssh.username = "dev-opts"
+#  config.ssh.pty = true
+#  config.vm.define "#{TRUSTRAP_TAG}" do |m|
+#    m.vm.provider "docker" do |d|
+#      d.has_ssh = true
+#      d.build_dir = "."
+#      d.build_args = ["--tag=msm-#{TRUSTRAP_TAG}"]
+#      d.create_args = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
+#      d.vagrant_machine = "dockerhost"
+#      d.vagrant_vagrantfile = "../Vagrantfile.proxy"
+#    end
+#  end 
+#  config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
+#end
 

@@ -13,7 +13,7 @@ services:
       - data                        : agg-lts-mongodb
         enabled                     : true
       - data                        : agg-redis
-        enabled                     : false
+        enabled                     : true
       - app                         : agg-management-agent
         enabled                     : false
       - app                         : agg-private-api

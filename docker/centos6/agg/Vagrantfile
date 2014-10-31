@@ -38,8 +38,13 @@
 # Original:     https://github.com/MSMFG/tru-strap
 # Git version:  https://github.com/pauldavidgilligan-msm/tru-strap
 # Git branch:   handsome-vagrant-docker
-#
-#
+#  
+# useful links:
+#               http://docs.docker.com/reference/builder/#usage
+#               https://docs.docker.com/reference/commandline/cli/
+#               http://blog.zenika.com/index.php?post/2014/10/07/Setting-up-a-development-environment-using-Docker-and-Vagrant
+#               https://github.com/jdeathe/centos-ssh
+
 require 'yaml'
 
 YAML_OPTIONS = "services.yaml"

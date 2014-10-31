@@ -9,6 +9,8 @@
 #               the required service (agg, aem, services, etc). This script has 
 #               been modified from the original concept to allow many applications
 #               to be provisioned under a vagrant/docker hosted solution.
+#
+#               This has beed designed to be re-entrant, i.e. it can be re-run.    
 # 
 # Original:     https://github.com/MSMFG/tru-strap
 # Git version:  https://github.com/pauldavidgilligan-msm/tru-strap

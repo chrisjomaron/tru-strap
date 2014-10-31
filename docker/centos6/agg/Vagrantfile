@@ -139,18 +139,19 @@ services.each do |service, params|
             Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               config.ssh.username = "dev-opts"
               config.ssh.pty = true
+              config.ssh.forward_agent = true
               config.vm.define "#{_tag}" do |m|
                 m.vm.provider "docker" do |vm|
                   vm.has_ssh = true
                   vm.build_dir = "."
                   vm.build_args = ["--tag=#{_tag}"]
-                  vm.create_args = ["--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_hostname}"]
+                  vm.create_args = ["--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end
               end 
              config.vm.provision "shell", inline: "echo node #{_tag} is very handsome!"
-             #config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
+             config.vm.provision :shell, :path => "init.sh", :args => TRUSTRAP_ARGS
             end
           end
         end 

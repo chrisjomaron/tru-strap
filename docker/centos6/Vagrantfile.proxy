@@ -12,12 +12,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Make this VM reachable on the host network as well, so that other
   # VM's running other browsers can access our dev server.
-  config.vm.network :private_network, ip: "192.168.10.200"
+  # config.vm.network :private_network, ip: "192.168.10.200"
 
   # Make it so that network access from the vagrant guest is able to
   # use SSH private keys that are present on the host without copying
   # them into the VM.
-  config.ssh.forward_agent = true
+  # config.ssh.forward_agent = true
  
   # The following line terminates all ssh connections. Therefore
   # Vagrant will be forced to reconnect.
@@ -26,7 +26,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
  
   config.vm.define "dockerhost"
   config.vm.box = "centos/centos6"
-  config.vm.network "forwarded_port", guest: 8080, host: 8080
+  # config.vm.network "forwarded_port", guest: 8080, host: 8080
  
   config.vm.provider :virtualbox do |v|
 
@@ -34,7 +34,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.name = "dockerhost"
 
       # This setting gives the VM 1024MB of RAM instead of the default 384.
-      v.customize ["modifyvm", :id, "--memory", [ENV['TRUSTRAP_VM_MEM'].to_i, 1024].max]
+      v.customize ["modifyvm", :id, "--memory", [ENV['TRUSTRAP_VM_MEM'].to_i, 2048].max]
  
       # Who has a single core cpu these days anyways?
       cpu_count = 4
@@ -49,10 +49,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # Assign additional cores to the guest OS.
       v.customize ["modifyvm", :id, "--cpus", cpu_count]
       v.customize ["modifyvm", :id, "--ioapic", "on"]
-
-      # This setting makes it so that network access from inside the vagrant guest
-      # is able to resolve DNS using the hosts VPN connection.
-      v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   end
  
 end

@@ -87,6 +87,7 @@ RUN rm -rf /etc/ld.so.cache \
 	; rm -rf /usr/{{lib,share}/locale,share/{man,doc,info,gnome/help,cracklib,il8n},{lib,lib64}/gconv,bin/localedef,sbin/build-locale-archive} \
 	; rm -rf /var/cache/{ldconfig,yum}/*
 
+
 EXPOSE 22
 
 CMD ["/usr/bin/supervisord", "--configuration=/etc/supervisord.conf"]

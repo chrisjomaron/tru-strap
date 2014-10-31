@@ -100,7 +100,7 @@ services.each do |service, params|
                   vm.has_ssh = true
                   vm.build_dir = "."
                   vm.build_args = ["--tag=#{_tag}"]
-                  vm.create_args = ["--interactive=true --dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_hostname}"]
+                  vm.create_args = ["--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_hostname}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end
@@ -127,7 +127,7 @@ services.each do |service, params|
                   vm.has_ssh = true
                   vm.build_dir = "."
                   vm.build_args = ["--tag=#{_tag}"]
-                  vm.create_args = ["--interactive=true --dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_hostname}"]
+                  vm.create_args = ["--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_hostname}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end

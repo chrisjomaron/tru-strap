@@ -114,7 +114,7 @@ services.each do |service, params|
         app_set.each do |a|
           if a['enabled']
             _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{a['app']}"
-           _fqdn = set_fqdn(_tag)
+            _fqdn = set_fqdn(_tag)
             _hostname = _fqdn.split('.')[0..1].join('.')
             puts "Provisioning Docker(enabled) role [#{_fqdn}] for app tier."
             Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|

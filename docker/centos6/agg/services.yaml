@@ -13,7 +13,7 @@ services:
       - data                        : agg-lts-mongodb
         enabled                     : false
       - data                        : agg-redis
-        enabled                     : false
+        enabled                     : true
       - app                         : agg-management-agent
         enabled                     : false
       - app                         : agg-private-api
@@ -23,4 +23,4 @@ services:
       - app                         : agg-performance-test-proxy
         enabled                     : false
       - app                         : agg_kafka
-        enabled                     : false
+        enabled                     : true

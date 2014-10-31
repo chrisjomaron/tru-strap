@@ -1,14 +1,37 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 #
-# init.sh       Provision MSM/TSM trustrap services.
+# Vagrantfile   Provision MSM/TSM trustrap services.
 #
 # Authors:      Paul Gilligan, <Paul.Gilligan@moneysupermarket.com>
 #
-# Description:  Install MSM/TSM based puppet provisioning software and provision
-#               the required service (agg, aem, services, etc). This script has 
-#               been modified from the original concept to allow many applications
-#               to be provisioned under a vagrant/docker hosted solution.
+# Description:  This is a multi-host docker provider provisioning Vagrantfile.
+#
+#               You must set some environment values in or to drive this:
+#
+#               export TRUSTRAP_ACCOUNT=msm    
+#               export TRUSTRAP_USERBASE=gb
+#               export TRUSTRAP_ENV=dev
+#               export TRUSTRAP_SERVICE=agg 
+#
+#               The TRUSTRAP_SERVICE is new, this represents a group of roles
+#               that are defined in the msm-provisoning puppet repository.
+#
+#               The combination TRUSTRAP_ENV and TRUSTRAP_SERVICE is used to 
+#               select a set of roles from the services.yaml file and these
+#               values are used to drive the provisioning of individual docker
+#               vm's.
+#               
+#               Once you have setup the environment and services.yaml simply
+#               run vagrant up.
+#
+#               You can access your new node from the node name via vargant:
+#
+#               vagrant ssh msm-gb-dev-agg-lts-mongodb
+#
+#               You can halt docker containers using vagrant halt.
+#
+#               You can destroy docker containers using vagrant destroy.
 #
 #               This has beed designed to be re-entrant, i.e. it can be re-run.    
 # 
@@ -107,7 +130,7 @@ services.each do |service, params|
             _fqdn = set_fqdn(_tag)
             _hostname = _fqdn.split('.')[0..1].join('.')
             _search = _fqdn.split('.')[-5..-1].join('.')
-            puts "Provisioning Docker(enabled) role [#{_fqdn}] for data tier."
+            puts "Provisioning Docker(enabled) fqdn [#{_fqdn}] for data tier."
             Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               config.ssh.username = "dev-opts"
               config.ssh.pty = true
@@ -134,7 +157,7 @@ services.each do |service, params|
             _fqdn = set_fqdn(_tag)
             _hostname = _fqdn.split('.')[0..1].join('.')
             _search = _fqdn.split('.')[-5..-1].join('.')
-            puts "Provisioning Docker(enabled) role [#{_fqdn}] for app tier."
+            puts "Provisioning Docker(enabled) fqdn [#{_fqdn}] for app tier."
             Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               config.ssh.username = "dev-opts"
               config.ssh.pty = true
@@ -149,7 +172,7 @@ services.each do |service, params|
                 end
               end
               config.vm.provision "shell", inline: "echo node #{_tag}  is very handsome!"
-              config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
+              #config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
             end
           end
         end

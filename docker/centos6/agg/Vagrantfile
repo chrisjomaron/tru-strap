@@ -90,6 +90,7 @@ services.each do |service, params|
             _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{d['data']}"
             _fqdn = set_fqdn(_tag)
             _hostname = _fqdn.split('.')[0..1].join('.')
+            _search = _fqdn.split('.')[-5..-1].join('.')
             puts "Provisioning Docker(enabled) role [#{_fqdn}] for data tier."
             Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               config.ssh.username = "dev-opts"
@@ -99,7 +100,7 @@ services.each do |service, params|
                   vm.has_ssh = true
                   vm.build_dir = "."
                   vm.build_args = ["--tag=#{_tag}"]
-                  vm.create_args = ["--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_hostname}"]
+                  vm.create_args = ["--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_hostname}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end
@@ -116,6 +117,7 @@ services.each do |service, params|
             _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{a['app']}"
             _fqdn = set_fqdn(_tag)
             _hostname = _fqdn.split('.')[0..1].join('.')
+            _search = _fqdn.split('.')[-5..-1].join('.')
             puts "Provisioning Docker(enabled) role [#{_fqdn}] for app tier."
             Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               config.ssh.username = "dev-opts"
@@ -125,7 +127,7 @@ services.each do |service, params|
                   vm.has_ssh = true
                   vm.build_dir = "."
                   vm.build_args = ["--tag=#{_tag}"]
-                  vm.create_args = ["--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_hostname}"]
+                  vm.create_args = ["--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_hostname}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end

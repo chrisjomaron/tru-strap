@@ -60,7 +60,7 @@ services = config_options['services']
 services.each do |service, params|
   if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
       puts "-" * 40
-      puts "Processing service options for [#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}]." 
+      puts "Processing service options for [#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}]" 
       dns = params.detect {|param| param['dns']}
       TRUSTRAP_DNS_ARG = "\"--dns=#{dns['dns'][0]['dns-1']}\", \"--dns=#{dns['dns'][1]['dns-2']}\""
       puts "Set DNS #{TRUSTRAP_DNS_ARG}"

@@ -138,6 +138,9 @@ fi
 # -----------------------------------------------------------------------------
 _bold "Running ${SCRIPTNAME}."
 TRUSTRAP_REPODIR="/opt/${TRUSTRAP_REPONAME}"
+if [[ -d "${TRUSTRAP_REPODIR}" ]]; then
+  rm -rf "${TRUSTRAP_REPODIR}"
+fi
 
 _bold "Installing RVM."
 gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3

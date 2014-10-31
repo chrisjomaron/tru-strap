@@ -63,7 +63,7 @@ services.each do |service, params|
       puts "Processing service options for [#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}]." 
       dns = params.detect {|param| param['dns']}
       TRUSTRAP_DNS_ARG = "\"--dns=#{dns['dns'][0]['dns-1']}\", \"--dns=#{dns['dns'][1]['dns-2']}\""
-      puts "Setting DNS #{TRUSTRAP_DNS_ARG}"
+      puts "Set DNS #{TRUSTRAP_DNS_ARG}"
       git = params.detect {|param| param['git']}
       TRUSTRAP_REPONAME   = "#{git['git'][0]['reponame']}"
       TRUSTRAP_REPOUSER   = "#{git['git'][1]['repouser']}"

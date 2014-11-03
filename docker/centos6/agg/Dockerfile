@@ -14,6 +14,7 @@ RUN yum install -y --enablerepo=centosplus \
 	vim-minimal \
 	sudo \
         tar \
+        which \
         git \
 	openssh \
 	openssh-server \
@@ -21,11 +22,6 @@ RUN yum install -y --enablerepo=centosplus \
 	python-pip \
 	&& rm -rf /var/cache/yum/* \
 	&& yum clean all
-
-# -----------------------------------------------------------------------------
-# Ruby Support
-# -----------------------------------------------------------------------------
-RUN yum install -y libyaml-devel libffi-devel readline-devel zlib-devel openssl-devel
 
 # -----------------------------------------------------------------------------
 # Install supervisord (required to run more than a single process in a container)
@@ -87,7 +83,14 @@ RUN rm -rf /etc/ld.so.cache \
 	; rm -rf /usr/{{lib,share}/locale,share/{man,doc,info,gnome/help,cracklib,il8n},{lib,lib64}/gconv,bin/localedef,sbin/build-locale-archive} \
 	; rm -rf /var/cache/{ldconfig,yum}/*
 
+# -----------------------------------------------------------------------------
+# GPG key for RVM
+# -----------------------------------------------------------------------------
+RUN gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
 
+# -----------------------------------------------------------------------------
+# Finish up
+# -----------------------------------------------------------------------------
 EXPOSE 22
 
 CMD ["/usr/bin/supervisord", "--configuration=/etc/supervisord.conf"]

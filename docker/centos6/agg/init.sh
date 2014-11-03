@@ -168,7 +168,8 @@ gem install hiera-eyaml --no-ri --no-rdoc
 gem install puppet --no-rdoc --no-ri
 
 _bold "Installing trustrap puppet from ${PUPPET_DIR}"
-rm -rf /etc/puppet ; ln -s ${PUPPET_DIR} /etc/puppet ; ln -s /etc/puppet/hiera.yaml /etc/hiera.yaml
+rm -rf /etc/puppet ; ln -s ${PUPPET_DIR} /etc/puppet 
+rm /etc/hiera.yaml ; ln -s /etc/puppet/hiera.yaml /etc/hiera.yaml
 
 _bold "Installing trustrap puppet security from ${PUPPET_DIR}"
 mkdir -p /etc/puppet/secure/keys
@@ -177,7 +178,7 @@ chmod 0500 /etc/puppet/secure/keys
 cd /etc/puppet/secure/
 eyaml createkeys
 
-_bold "Installing puppet role ${PUPPET_BASE_FILE}"
+_bold "Installing puppet role ${TRUSTRAP_ROLE}"
 if [[ ! -f /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE} ]] || [[ ! -f /etc/puppet/Puppetfiles/${PUPPET_BASE_ROLE_FILE} ]]; then
   _err "Error locating puppet role file /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE}"
   _err "Error locating puppet role file /etc/puppet/Puppetfiles/${PUPPET_BASE_ROLE_FILE}"
@@ -199,6 +200,11 @@ librarian-puppet show
 # Pull the puppet string
 # -----------------------------------------------------------------------------
 _bold "Running puppet apply"
+mkdir -m 0600 -p /etc/facter/facts.d 
+echo "init_env=${TRUSTRAP_ENV}"    > /etc/facter/facts.d/init_env.txt
+echo "init_role=${TRUSTRAP_ROLE}"  > /etc/facter/facts.d/init_env.txt
+facter init_env
+facter init_role
 puppet apply /etc/puppet/manifests/site.pp
 
 _line

@@ -58,12 +58,6 @@ if [[ ! -d ${OPTS_SSH_USER_HOME_DIR}/.ssh ]]; then
 	echo "SSH Credentials: "
 	echo "root : ${OPTS_SSH_ROOT_PASSWORD}"
 	echo "${OPTS_SSH_USER} : ${OPTS_SSH_USER_PASSWORD}"
-	#echo
-	#echo "RSA Host Key: "
-	#echo "$(cat /etc/ssh/ssh_host_rsa_key)"
-	#echo
-	#echo "DSA Host Key: "
-	#echo "$(cat /etc/ssh/ssh_host_dsa_key)"
 	echo "--------------------------------------------------------------------------------"
 	echo
 

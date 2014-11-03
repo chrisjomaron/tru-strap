@@ -152,7 +152,8 @@ yum install -y facter
 
 GITCMD="git clone --progress -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git ${TRUSTRAP_REPODIR}"
 PUPPET_DIR="${TRUSTRAP_REPODIR}/puppet"
-PUPPET_BASE_FILE="Puppetfile.${TRUSTRAP_ROLE}"
+PUPPET_BASE_FILE="Puppetfile.base"
+PUPPET_BASE_ROLE_FILE="Puppetfile.${TRUSTRAP_ROLE}"
 
 if [[ ! -d /root/.ssh ]]; then
   echo "Add github.com to known_hosts"
@@ -177,13 +178,14 @@ cd /etc/puppet/secure/
 eyaml createkeys
 
 _bold "Installing puppet role ${PUPPET_BASE_FILE}"
-if [[ ! -f /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE} ]]; then
+if [[ ! -f /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE} ]] || [[ ! -f /etc/puppet/Puppetfiles/${PUPPET_BASE_ROLE_FILE} ]]; then
   _err "Error locating puppet role file /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE}"
-  _err "Check role name, ${TRUSTRAP_ROLE}"
+  _err "Error locating puppet role file /etc/puppet/Puppetfiles/${PUPPET_BASE_ROLE_FILE}"
+  _err "Check files and role name, ${TRUSTRAP_ROLE}"
   exit 1
 fi
-ln -s /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE} /etc/puppet/Puppetfile
-cd /etc/puppet/Puppetfile
+cat /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE} /etc/puppet/Puppetfiles/${PUPPET_BASE_ROLE_FILE} > /etc/puppet/Puppetfile
+cd /etc/puppet
 librarian-puppet install --verbose
 librarian-puppet show
 

@@ -50,7 +50,11 @@ if [[ ! -d ${OPTS_SSH_USER_HOME_DIR}/.ssh ]]; then
         # we need to setup default keys for user otherwise git SSH won't work
         runuser -l ${OPTS_SSH_USER} -c 'echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config'
         runuser -l ${OPTS_SSH_USER} -c 'chmod 600 ~/.ssh/config'
+        runuser -l ${OPTS_SSH_USER} -c 'ssh-keyscan github.com >> ~/.ssh/known_hosts'
         runuser -l ${OPTS_SSH_USER} -c 'ssh-keygen -b 2048 -t rsa -q -N "" -f ~/.ssh/id_rsa'
+
+        # install latest GPG security key for rvm
+        runuser -l ${OPTS_SSH_USER} -c 'gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3'
  
 	echo
 	echo "--------------------------------------------------------------------------------"

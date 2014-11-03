@@ -152,26 +152,26 @@ if [[ -d "${TRUSTRAP_REPODIR}" ]]; then
 fi
 
 _bold "Installing RVM"
-gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
-curl -L get.rvm.io | bash -s stable
-
-_bold "Installing RVM ruby ${RUBYVERSION}"
+curl -sSL https://get.rvm.io | bash -s stable 
 source /etc/profile.d/rvm.sh
 rvm reload
+
+_bold "Installing Ruby ${RUBYVERSION}"
 rvm install ${RUBYVERSION}
 rvm use ${RUBYVERSION}
 
-_bold "Installing puppet"
+_bold "Installing puppet tools"
 yum install -y http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm 
 yum install -y puppet 
 yum install -y facter
 
 _bold "Cloning ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git to ${TRUSTRAP_REPODIR}"
-git clone -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git $TRUSTRAP_REPODIR
+#git clone --progress -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git $TRUSTRAP_REPODIR
+# git clone https://github.com/pauldavidgilligan-msm/tru-strap.git
 
 _bold "Installing puppet gems"
-gem install librarian-puppet --no-rdoc --no-ri --force
-gem install hiera-eyaml --no-ri --no-rdoc
+#gem install librarian-puppet --no-rdoc --no-ri --force
+#gem install hiera-eyaml --no-ri --no-rdoc
 
 
 _line

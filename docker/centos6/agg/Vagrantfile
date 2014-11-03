@@ -120,10 +120,6 @@ services.each do |service, params|
       puts "TRUSTRAP_REPOBRANCH   #{TRUSTRAP_REPOBRANCH}"
       puts "=" * 40
 
-      # this is made to be somewhat backwards compatible.
-      # ./init.sh -s agg -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
-      TRUSTRAP_ARGS = "-s #{TRUSTRAP_SERVICE} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
-    
       # provision multi-machines
       rls.each do |key, value|
         data_set =  value.select {|d| d['data']}
@@ -131,11 +127,12 @@ services.each do |service, params|
         # provision data
         data_set.each do |d|
           if d['enabled'] 
-            _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{d['data']}"
+            _role = "#{d['data']}"
+            _ts_args = "-r #{_role} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
+            _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{_role}"
             _fqdn = set_fqdn(_tag)
-            _hostname = _fqdn.split('.')[0..1].join('.')
             _search = _fqdn.split('.')[-5..-1].join('.')
-            puts "Provisioning Docker(enabled) fqdn [#{_fqdn}] for data tier."
+            puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for data tier."
             Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               config.ssh.username = "dev-opts"
               config.ssh.pty = true
@@ -151,7 +148,7 @@ services.each do |service, params|
                 end
               end 
              config.vm.provision "shell", inline: "echo node #{_tag} is very handsome!"
-             config.vm.provision :shell, :path => "init.sh", :args => TRUSTRAP_ARGS
+             config.vm.provision :shell, :path => "init.sh", :args => _ts_args
             end
           end
         end 
@@ -159,11 +156,12 @@ services.each do |service, params|
         # provision apps
         app_set.each do |a|
           if a['enabled']
-            _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{a['app']}"
+            _role = "#{a['app']}"
+            _ts_args = "-r #{_role} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
+            _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{_role}"
             _fqdn = set_fqdn(_tag)
-            _hostname = _fqdn.split('.')[0..1].join('.')
             _search = _fqdn.split('.')[-5..-1].join('.')
-            puts "Provisioning Docker(enabled) fqdn [#{_fqdn}] for app tier."
+            puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for app tier."
             Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               config.ssh.username = "dev-opts"
               config.ssh.pty = true
@@ -172,7 +170,7 @@ services.each do |service, params|
                   vm.has_ssh = true
                   vm.build_dir = "."
                   vm.build_args = ["--tag=#{_tag}"]
-                  vm.create_args = ["--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_hostname}"]
+                  vm.create_args = ["--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end

@@ -5,9 +5,8 @@
 # Authors:      Jim Davies, <Jim.Davies@moneysupermarket.com>
 #               Paul Gilligan, <Paul.Gilligan@moneysupermarket.com>
 #
-# Description:  Install MSM/TSM based puppet provisioning software and provision
-#               the required service (agg, aem, services, etc). This script has 
-#               been modified from the original concept to allow many applications
+# Description:  Install MSM/TSM based puppet provisioning software and 
+#               provision the required puppet role. This script has been modified from the original concept to allow many applications
 #               to be provisioned under a vagrant/docker hosted solution.
 #
 #               This has beed designed to be re-entrant, i.e. it can be re-run.    
@@ -16,12 +15,11 @@
 # Git version:  https://github.com/pauldavidgilligan-msm/tru-strap
 # Git branch:   handsome-vagrant-docker
 
-# Usage:        ./init.sh -s agg -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
+# Usage:        ./init.sh -r agg-redis -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
 
 VERSION=0.0.2
 SCRIPTNAME=`basename $0`
 RUBYVERSION="ruby-2.1.4"
-TRUSTRAP_REPOPRIVKEYFILE="~/.ssh/id_rsa"
 NOW=$(date "+%Y_%m_%d_%H")
 PROGRESS_LOG=/tmp/progress_${NOW}.log
 
@@ -56,12 +54,11 @@ cat <<EOF
     Usage: $0 [options]
     -h| --help             this usage text.
     -v| --version          the version.
-    -s| --service          the Service name, e.g. agg, aem, services.
+    -r| --role             the trustrap role
     -e| --environment      the environment name.
     -u| --repouser         the git repository user name.
     -n| --reponame         the git repository name.
     -b| --repobranch       the git repository branch name.
-    -k| --repoprivkeyfile  your git repository private key file
     
 EOF
 }
@@ -89,8 +86,8 @@ while test -n "$1"; do
     print_version $SCRIPTNAME $VERSION
     exit
     ;;
-  --service|-s)
-    TRUSTRAP_SERVICE=$2
+  --role|-r)
+    TRUSTRAP_ROLE=$2
     shift
     ;;
   --environment|-e)
@@ -109,10 +106,6 @@ while test -n "$1"; do
     TRUSTRAP_REPOBRANCH=$2
     shift
     ;;
-  --repoprivkeyfile|-k)
-    TRUSTRAP_REPOPRIVKEYFILE=$2
-    shift
-    ;;
 
   *)
     _err ", unknown argument: $1"
@@ -127,17 +120,9 @@ done
 # Check
 # -----------------------------------------------------------------------------
 _bold "Verifying ${SCRIPTNAME}"
-if [[ ${TRUSTRAP_SERVICE} == "" || ${TRUSTRAP_ENV} == "" || ${TRUSTRAP_REPOUSER} == "" || ${TRUSTRAP_REPONAME} == "" || ${TRUSTRAP_REPOBRANCH} == "" || ${TRUSTRAP_REPOPRIVKEYFILE} == "" ]]; then
+if [[ ${TRUSTRAP_ROLE} == "" || ${TRUSTRAP_ENV} == "" || ${TRUSTRAP_REPOUSER} == "" || ${TRUSTRAP_REPONAME} == "" || ${TRUSTRAP_REPOBRANCH} == "" ]]; then
   _err ", missing argument(s)."
   usage
-  exit 1
-fi
-
-valid_services=('agg', 'aem', 'services')
-if echo "${valid_services[@]}" | fgrep --word-regexp "${TRUSTRAP_SERVICE}"; then
-  _bold "Building service for [${TRUSTRAP_SERVICE}]" 
-else
-  _err "Service ${TRUSTRAP_SERVICE} not valid, must be one of ${valid_services[*]}!" 
   exit 1
 fi
 
@@ -165,7 +150,10 @@ yum install -y http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
 yum install -y puppet 
 yum install -y facter
 
-GITCMD="git clone --progress -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git $TRUSTRAP_REPODIR"
+GITCMD="git clone --progress -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git ${TRUSTRAP_REPODIR}"
+PUPPET_DIR="${TRUSTRAP_REPODIR}/puppet"
+PUPPET_BASE_FILE="Puppetfile.${TRUSTRAP_ROLE}"
+
 if [[ ! -d /root/.ssh ]]; then
   echo "Add github.com to known_hosts"
   mkdir /root/.ssh && touch /root/.ssh/known_hosts && ssh-keyscan -H github.com >> /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts
@@ -174,9 +162,42 @@ _bold "Git: ${GITCMD}"
 `${GITCMD}`
 
 _bold "Installing puppet gems"
-#gem install librarian-puppet --no-rdoc --no-ri --force
-#gem install hiera-eyaml --no-ri --no-rdoc
+gem install librarian-puppet --no-rdoc --no-ri 
+gem install hiera-eyaml --no-ri --no-rdoc
+gem install puppet --no-rdoc --no-ri
 
+_bold "Installing trustrap puppet from ${PUPPET_DIR}"
+rm -rf /etc/puppet ; ln -s ${PUPPET_DIR} /etc/puppet ; ln -s /etc/puppet/hiera.yaml /etc/hiera.yaml
+
+_bold "Installing trustrap puppet security from ${PUPPET_DIR}"
+mkdir -p /etc/puppet/secure/keys
+chmod 0500 /etc/puppet/secure/
+chmod 0500 /etc/puppet/secure/keys
+cd /etc/puppet/secure/
+eyaml createkeys
+
+_bold "Installing puppet role ${PUPPET_BASE_FILE}"
+if [[ ! -f /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE} ]]; then
+  _err "Error locating puppet role file /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE}"
+  _err "Check role name, ${TRUSTRAP_ROLE}"
+  exit 1
+fi
+ln -s /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE} /etc/puppet/Puppetfile
+cd /etc/puppet/Puppetfile
+librarian-puppet install --verbose
+librarian-puppet show
+
+# -----------------------------------------------------------------------------
+# Tests
+# -----------------------------------------------------------------------------
+
+
+
+# -----------------------------------------------------------------------------
+# Pull the puppet string
+# -----------------------------------------------------------------------------
+_bold "Running puppet apply"
+puppet apply /etc/puppet/manifests/site.pp
 
 _line
 _bold "${SCRIPTNAME} Complete"

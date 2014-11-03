@@ -154,6 +154,7 @@ fi
 _bold "Installing RVM"
 gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
 curl -L get.rvm.io | bash -s stable
+
 _bold "Installing RVM ruby ${RUBYVERSION}"
 source /etc/profile.d/rvm.sh
 rvm reload
@@ -164,7 +165,7 @@ _bold "Installing puppet"
 yum install -y http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm 
 yum install -y puppet 
 yum install -y facter
-bold "Cloning ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git to ${TRUSTRAP_REPODIR}"
+_bold "Cloning ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git to ${TRUSTRAP_REPODIR}"
 git clone -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git $TRUSTRAP_REPODIR
 _bold "Installing puppet gems"
 gem install librarian-puppet --no-rdoc --no-ri --force

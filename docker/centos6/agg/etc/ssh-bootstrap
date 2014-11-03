@@ -45,13 +45,12 @@ if [[ ! -d ${OPTS_SSH_USER_HOME_DIR}/.ssh ]]; then
 	# Set user passwords
 	echo "root:${OPTS_SSH_ROOT_PASSWORD}" | chpasswd
 	echo "${OPTS_SSH_USER}:${OPTS_SSH_USER_PASSWORD}" | chpasswd
- 
-        # Allow easy ssh access to github
-        echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ${OPTS_SSH_USER_HOME_DIR}/.ssh/config
-        
-        # VM Client needs its own SSH key to SSH out of VM for git clone for example
-        runuser -l ${OPTS_SSH_USER} -c 'ssh-keygen -b 2048 -t rsa -f /tmp/sshkey -q -N ""'
 
+        # we need to setup default keys for user otherwise git SSH won't work
+        runuser -l ${OPTS_SSH_USER} -c 'echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config'
+        runuser -l ${OPTS_SSH_USER} -c 'chmod 600 ~/.ssh/config'
+        runuser -l ${OPTS_SSH_USER} -c 'ssh-keygen -b 2048 -t rsa -q -N "" -f ~/.ssh/id_rsa'
+ 
 	echo
 	echo "--------------------------------------------------------------------------------"
 	echo "SSH Credentials: "

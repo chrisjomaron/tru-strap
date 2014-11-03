@@ -34,7 +34,6 @@ function _line {
   length=40
   printf -v line '%*s' "$length"
   echo ${line// /=}
-  echo $(date "+%Y-%m-%d %H:%M:%S") $1 >> ${PROGRESS_LOG}
 }
 
 function _bold {
@@ -149,6 +148,7 @@ _bold "Running ${SCRIPTNAME}"
 TRUSTRAP_REPODIR="/opt/${TRUSTRAP_REPONAME}"
 if [[ -d "${TRUSTRAP_REPODIR}" ]]; then
   rm -rf "${TRUSTRAP_REPODIR}"
+  echo "Removed previous git repostory ${TRUSTRAP_REPODIR}"
 fi
 
 _bold "Installing RVM"
@@ -165,8 +165,10 @@ _bold "Installing puppet"
 yum install -y http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm 
 yum install -y puppet 
 yum install -y facter
+
 _bold "Cloning ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git to ${TRUSTRAP_REPODIR}"
 git clone -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git $TRUSTRAP_REPODIR
+
 _bold "Installing puppet gems"
 gem install librarian-puppet --no-rdoc --no-ri --force
 gem install hiera-eyaml --no-ri --no-rdoc

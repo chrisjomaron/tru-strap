@@ -165,9 +165,13 @@ yum install -y http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
 yum install -y puppet 
 yum install -y facter
 
-_bold "Cloning ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git to ${TRUSTRAP_REPODIR}"
-#git clone --progress -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git $TRUSTRAP_REPODIR
-# git clone https://github.com/pauldavidgilligan-msm/tru-strap.git
+GITCMD="git clone --progress -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git $TRUSTRAP_REPODIR"
+if [[ ! -d /root/.ssh ]]; then
+  echo "Add github.com to known_hosts"
+  mkdir /root/.ssh && touch /root/.ssh/known_hosts && ssh-keyscan -H github.com >> /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts
+fi
+_bold "Git: ${GITCMD}"
+`${GITCMD}`
 
 _bold "Installing puppet gems"
 #gem install librarian-puppet --no-rdoc --no-ri --force

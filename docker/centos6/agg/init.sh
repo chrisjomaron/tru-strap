@@ -177,6 +177,7 @@ chmod 0500 /etc/puppet/secure/
 chmod 0500 /etc/puppet/secure/keys
 cd /etc/puppet/secure/
 eyaml createkeys
+# TODO: @Paul dev keys ?
 
 _bold "Installing puppet role ${TRUSTRAP_ROLE}"
 if [[ ! -f /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE} ]] || [[ ! -f /etc/puppet/Puppetfiles/${PUPPET_BASE_ROLE_FILE} ]]; then
@@ -198,6 +199,7 @@ rvm --default use system
   
 # -----------------------------------------------------------------------------
 # Set factor values 
+# TODO: @Jim some duplication!
 # -----------------------------------------------------------------------------
 _bold "Set Facter values"
 mkdir -m 0600 -p /etc/facter/facts.d
@@ -207,6 +209,12 @@ echo "init_role=${TRUSTRAP_ROLE}"              >> /etc/facter/facts.d/init_custo
 echo "init_repouser=${TRUSTRAP_REPOUSER}"      >> /etc/facter/facts.d/init_custom_values.txt
 echo "init_reponame=${TRUSTRAP_REPONAME}"      >> /etc/facter/facts.d/init_custom_values.txt
 echo "init_repobranch=${TRUSTRAP_REPOBRANCH}"  >> /etc/facter/facts.d/init_custom_values.txt
+
+echo "msmid_env=${TRUSTRAP_ENV}"                >> /etc/facter/facts.d/init_custom_values.txt
+echo "msmid_role=${TRUSTRAP_ROLE}"              >> /etc/facter/facts.d/init_custom_values.txt
+echo "msmid_repouser=${TRUSTRAP_REPOUSER}"      >> /etc/facter/facts.d/init_custom_values.txt
+echo "msmid_reponame=${TRUSTRAP_REPONAME}"      >> /etc/facter/facts.d/init_custom_values.txt
+echo "msmid_repobranch=${TRUSTRAP_REPOBRANCH}"  >> /etc/facter/facts.d/init_custom_values.txt
 
 # -----------------------------------------------------------------------------
 # Pull the puppet string

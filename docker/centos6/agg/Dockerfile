@@ -43,18 +43,22 @@ RUN ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
 # Configure SSH for non-root public key authentication
 # -----------------------------------------------------------------------------
 RUN sed -i \
-	-e 's/^UsePAM yes/#UsePAM yes/g' \
+        -e 's/^UsePAM yes/#UsePAM yes/g' \
 	-e 's/^#UsePAM no/UsePAM no/g' \
 	-e 's/^PasswordAuthentication yes/PasswordAuthentication no/g' \
 	-e 's/^#PermitRootLogin yes/PermitRootLogin no/g' \
 	-e 's/^#UseDNS yes/UseDNS no/g' \
 	/etc/ssh/sshd_config
 
-
 # -----------------------------------------------------------------------------
-# Docker lcx specfic devices 
+# Docker lxc specfic devices 
 # -----------------------------------------------------------------------------
 RUN yum install -y libcgroup
+
+# -----------------------------------------------------------------------------
+# Cron Provider
+# -----------------------------------------------------------------------------
+RUN yum install -y vixie-cron
 
 # -----------------------------------------------------------------------------
 # Enable the wheel sudoers group

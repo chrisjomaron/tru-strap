@@ -194,6 +194,12 @@ librarian-puppet show
 # Tests
 # -----------------------------------------------------------------------------
 
+# # Use RVM to revert Ruby version to back to system default (1.8.7)
+rvm --default use system
+  
+# -----------------------------------------------------------------------------
+# 
+# -----------------------------------------------------------------------------
 
 
 # -----------------------------------------------------------------------------
@@ -202,10 +208,10 @@ librarian-puppet show
 _bold "Running puppet apply"
 mkdir -m 0600 -p /etc/facter/facts.d 
 echo "init_env=${TRUSTRAP_ENV}"    > /etc/facter/facts.d/init_env.txt
-echo "init_role=${TRUSTRAP_ROLE}"  > /etc/facter/facts.d/init_env.txt
+echo "init_role=${TRUSTRAP_ROLE}"  > /etc/facter/facts.d/init_role.txt
 facter init_env
 facter init_role
-puppet apply /etc/puppet/manifests/site.pp
+puppet apply --debug /etc/puppet/manifests/site.pp
 
 _line
 _bold "${SCRIPTNAME} Complete"

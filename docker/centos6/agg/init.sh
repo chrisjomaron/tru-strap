@@ -220,7 +220,7 @@ echo "msmid_repobranch=${TRUSTRAP_REPOBRANCH}"  >> /etc/facter/facts.d/init_cust
 # Pull the puppet string
 # -----------------------------------------------------------------------------
 _bold "Provison with puppet apply"
-puppet apply --debug /etc/puppet/manifests/site.pp
+puppet apply /etc/puppet/manifests/site.pp
 
 _line
 _bold "${SCRIPTNAME} Complete"

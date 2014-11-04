@@ -188,7 +188,7 @@ services.each do |service, params|
                 end
               end
               config.vm.provision "shell", inline: "echo node #{_tag}  is very handsome!"
-              config.vm.provision :shell, :path => "../../../init.sh", :args => _ts_args
+              config.vm.provision :shell, :path => "init.sh", :args => _ts_args
             end
           end
         end

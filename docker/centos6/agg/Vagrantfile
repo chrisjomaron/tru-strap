@@ -7,7 +7,7 @@
 #
 # Description:  This is a multi-host docker provider provisioning Vagrantfile.
 #
-#               You must set some environment values in or to drive this:
+# Environment:  You must set some environment values in or to drive this:
 #
 #               export TRUSTRAP_ACCOUNT=msm    
 #               export TRUSTRAP_USERBASE=gb
@@ -21,8 +21,21 @@
 #               select a set of roles from the services.yaml file and these
 #               values are used to drive the provisioning of individual docker
 #               vm's.
-#               
-#               Once you have setup the environment and services.yaml simply
+#
+# Authentication:
+#
+#               Access to private git repositories (TRUSTRAP_REPONAME) requires
+#               you to setup your own git private key on the machine that you
+#               run vagrant from, SSH agent forwarding is set to true.
+#
+# Docker Dev Args:
+#
+#               Docker extended args for development:
+#
+#               --privileged=true      Give extended privileges to this container
+#               --publish-all=true     Publish all exposed ports to the host interfaces
+# 
+# Running:      Once you have setup the environment and services.yaml simply
 #               run vagrant up.
 #
 #               You can access your new node from the node name via vargant:
@@ -39,8 +52,7 @@
 # Git version:  https://github.com/pauldavidgilligan-msm/tru-strap
 # Git branch:   handsome-vagrant-docker
 #  
-# useful links:
-#               http://docs.docker.com/reference/builder/#usage
+# useful links: http://docs.docker.com/reference/builder/#usage
 #               https://docs.docker.com/reference/commandline/cli/
 #               http://blog.zenika.com/index.php?post/2014/10/07/Setting-up-a-development-environment-using-Docker-and-Vagrant
 #               https://github.com/jdeathe/centos-ssh
@@ -142,7 +154,7 @@ services.each do |service, params|
                   vm.has_ssh = true
                   vm.build_dir = "."
                   vm.build_args = ["--tag=#{_tag}"]
-                  vm.create_args = ["--privileged", "--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
+                  vm.create_args = ["--publish-all", "--privileged", "--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end
@@ -170,13 +182,13 @@ services.each do |service, params|
                   vm.has_ssh = true
                   vm.build_dir = "."
                   vm.build_args = ["--tag=#{_tag}"]
-                  vm.create_args = ["--privileged", "--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
+                  vm.create_args = ["--publish-all", "--privileged", "--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end
               end
               config.vm.provision "shell", inline: "echo node #{_tag}  is very handsome!"
-              #config.vm.provision :shell, :path => "../../../init.sh", :args => TRUSTRAP_ARGS
+              config.vm.provision :shell, :path => "../../../init.sh", :args => _ts_args
             end
           end
         end

@@ -101,6 +101,8 @@ RUN gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
 # -----------------------------------------------------------------------------
 # Finish up
 # -----------------------------------------------------------------------------
+VOLUME /var/lib/docker
+
 EXPOSE 22
 
 CMD ["/usr/bin/supervisord", "--configuration=/etc/supervisord.conf"]

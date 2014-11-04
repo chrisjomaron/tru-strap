@@ -191,26 +191,27 @@ librarian-puppet install --verbose
 librarian-puppet show
 
 # -----------------------------------------------------------------------------
-# Tests
+# Use RVM to revert Ruby version to back to system default (1.8.7)
+# this is required due to changes in the yaml parser in ruby 2+
 # -----------------------------------------------------------------------------
-
-# # Use RVM to revert Ruby version to back to system default (1.8.7)
 rvm --default use system
   
 # -----------------------------------------------------------------------------
-# 
+# Set factor values 
 # -----------------------------------------------------------------------------
-
+_bold "Set Facter values"
+mkdir -m 0600 -p /etc/facter/facts.d
+echo "# trustrap generated custom values"       > /etc/facter/facts.d/init_custom_values.txt
+echo "init_env=${TRUSTRAP_ENV}"                >> /etc/facter/facts.d/init_custom_values.txt
+echo "init_role=${TRUSTRAP_ROLE}"              >> /etc/facter/facts.d/init_custom_values.txt
+echo "init_repouser=${TRUSTRAP_REPOUSER}"      >> /etc/facter/facts.d/init_custom_values.txt
+echo "init_reponame=${TRUSTRAP_REPONAME}"      >> /etc/facter/facts.d/init_custom_values.txt
+echo "init_repobranch=${TRUSTRAP_REPOBRANCH}"  >> /etc/facter/facts.d/init_custom_values.txt
 
 # -----------------------------------------------------------------------------
 # Pull the puppet string
 # -----------------------------------------------------------------------------
-_bold "Running puppet apply"
-mkdir -m 0600 -p /etc/facter/facts.d 
-echo "init_env=${TRUSTRAP_ENV}"    > /etc/facter/facts.d/init_env.txt
-echo "init_role=${TRUSTRAP_ROLE}"  > /etc/facter/facts.d/init_role.txt
-facter init_env
-facter init_role
+_bold "Provison with puppet apply"
 puppet apply --debug /etc/puppet/manifests/site.pp
 
 _line

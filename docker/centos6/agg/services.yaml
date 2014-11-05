@@ -11,25 +11,38 @@ services:
       - data                        : agg-mongodb
         enabled                     : false
         ports: 
+        - "2220:22"
         - "27017:27017"
       - data                        : agg-lts-mongodb
         enabled                     : false
         ports: 
+        - "2221:22"
         - "27017:27017"
       - data                        : agg-redis
         enabled                     : true
         ports: 
+        - "2222:22"
         - "6379:6379"
         - "6380:6380" 
       - app                         : agg-management-agent
         enabled                     : false
+        ports:
+        - "2223:22"
       - app                         : agg-private-api
         enabled                     : false
+        ports:
+        - "2224:22"
       - app                         : agg-public-api
         enabled                     : false
         ports:
+        - "2225:22"
         - "8090:8090"
       - app                         : agg-performance-test-proxy
         enabled                     : false
+        ports:
+        - "2226:22"
       - app                         : agg_kafka
         enabled                     : false
+        ports:
+        - "2227:22"
+

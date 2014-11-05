@@ -57,6 +57,7 @@
 #               https://github.com/jdeathe/centos-ssh
 
 require 'yaml'
+require "resolv"
 
 YAML_OPTIONS = "services.yaml"
 VAGRANTFILE_API_VERSION = "2"
@@ -108,12 +109,72 @@ puts "TRUSTRAP_ENV          #{TRUSTRAP_ENV}"
 puts "TRUSTRAP_SERVICE      #{TRUSTRAP_SERVICE}"
 
 # -----------------------------------------------------------------------------
-# Yaml Options
+# Provision 
+# 1. Network Services  (skydns, etcd)
+# 2. Business Services (services.yaml)
 # -----------------------------------------------------------------------------
-config_options = YAML.load_file(YAML_OPTIONS)
-services = config_options['services']
-services.each do |service, params|
-  if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.ssh.username = "dev-opts"
+  config.ssh.pty = true
+  config.ssh.forward_agent = true
+
+  # -------------------------------------------
+  # Provision etcd
+  # -------------------------------------------
+  config.vm.define "etcd" do |m|
+    m.vm.provider "docker" do |vm|
+      vm.name            = "etcd.msm.internal"
+      vm.image           = "registry1-eu1.moneysupermarket.com:5000/etcd"
+      vm.has_ssh         = false
+      vm.create_args     = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
+      vm.vagrant_machine = "dockerhost"
+      vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
+    end
+  end
+
+  # -------------------------------------------
+  # Provision skydns
+  # -------------------------------------------
+  config.vm.define "skydns" do |m|
+    m.vm.provider "docker" do |vm|
+      vm.name            = "skydns.msm.internal"
+      vm.image           = "registry1-eu1.moneysupermarket.com:5000/skydns"
+      vm.has_ssh         = false
+      vm.create_args     = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
+      vm.vagrant_machine = "dockerhost"
+      vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
+      vm.link("etcd.msm.internal:etcd.msm.internal")
+    end
+  end
+
+  # TODO: Looks like we might need a vagrant plugin
+  puts "-" * 40
+  puts "Pause, allow Docker to respond to Network Service changes"
+  sleep 5
+
+  # best ask docker for the IP
+  begin
+    puts "-" * 40
+    skydns_ip_raw1 = %x( docker inspect skydns.msm.internal | grep IPAddress )
+    skydns_ip_raw2 = skydns_ip_raw1.split(':')[1].chop.chop
+    @skydns_ip = skydns_ip_raw2.gsub('"', '').gsub(' ', '')
+    if @skydns_ip =~ Resolv::IPv4::Regex ? true : false 
+      puts "Resolved valid IP for skydns container:"
+      puts "==> #{@skydns_ip}"
+    else
+      abort("Could not correctly resolve skydns IP [#{@skydns_ip}], exiting ...")
+    end
+  rescue
+    puts "Skipping skydns IP lookup..."
+  end
+  
+  # -------------------------------------------
+  # Provision Business Serivices
+  # -------------------------------------------
+  config_options = YAML.load_file(YAML_OPTIONS)
+  services = config_options['services']
+  services.each do |service, params|
+    if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
       puts "-" * 40
       puts "Processing service options for [#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}]" 
       dns = params.detect {|param| param['dns']}
@@ -144,10 +205,6 @@ services.each do |service, params|
             _fqdn = set_fqdn(_tag)
             _search = _fqdn.split('.')[-5..-1].join('.')
             puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for data tier."
-            Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-              config.ssh.username = "dev-opts"
-              config.ssh.pty = true
-              config.ssh.forward_agent = true
               config.vm.define "#{_tag}" do |m|
                 m.vm.provider "docker" do |vm|
                   vm.has_ssh = true
@@ -156,51 +213,23 @@ services.each do |service, params|
                   if d['ports'] 
                     vm.ports = d['ports'] 
                   end
-                  vm.create_args = ["--privileged", "--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
+                  vm.create_args = ["--privileged", "--dns-search=msm.internal", "--dns=#{@skydns_ip}", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
+                  vm.link("etcd.msm.internal:etcd.msm.internal")
+                  vm.link("skydns.msm.internal:skydns.msm.internal")
                 end
               end 
              config.vm.provision "shell", inline: "echo node #{_tag} is very handsome!"
-             config.vm.provision :shell, :path => "init.sh", :args => _ts_args
-            end
+             # config.vm.provision :shell, :path => "init.sh", :args => _ts_args
           end
         end 
-        
-        # provision apps
-        app_set.each do |a|
-          if a['enabled']
-            _role = "#{a['app']}"
-            _ts_args = "-r #{_role} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
-            _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{_role}"
-            _fqdn = set_fqdn(_tag)
-            _search = _fqdn.split('.')[-5..-1].join('.')
-            puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for app tier."
-            Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-              config.ssh.username = "dev-opts"
-              config.ssh.pty = true
-              config.vm.define "#{_tag}" do |m|
-                m.vm.provider "docker" do |vm|
-                  vm.has_ssh = true
-                  vm.build_dir = "."
-                  vm.build_args = ["--tag=#{_tag}"]
-                  if d['ports']
-                    vm.ports = d['ports']
-                  end
-                  vm.create_args = ["--privileged", "--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
-                  vm.vagrant_machine = "dockerhost"
-                  vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
-                end
-              end
-              config.vm.provision "shell", inline: "echo node #{_tag}  is very handsome!"
-              config.vm.provision :shell, :path => "init.sh", :args => _ts_args
-            end
-          end
-        end
-
       end # rls.each do |key, value|
-  else
-    abort("Service variable: #{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE} is not set in file #{YAML_OPTIONS}, exiting ...")
+    else
+      abort("Service variable: #{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE} is not set in file #{YAML_OPTIONS}, exiting ...")
   end
 end
+
+end
+
 

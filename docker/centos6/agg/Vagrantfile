@@ -33,7 +33,6 @@
 #               Docker extended args for development:
 #
 #               --privileged=true      Give extended privileges to this container
-#               --publish-all=true     Publish all exposed ports to the host interfaces
 # 
 # Running:      Once you have setup the environment and services.yaml simply
 #               run vagrant up.
@@ -154,7 +153,10 @@ services.each do |service, params|
                   vm.has_ssh = true
                   vm.build_dir = "."
                   vm.build_args = ["--tag=#{_tag}"]
-                  vm.create_args = ["--publish-all", "--privileged", "--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
+                  if d['ports'] 
+                    vm.ports = d['ports'] 
+                  end
+                  vm.create_args = ["--privileged", "--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end
@@ -182,7 +184,10 @@ services.each do |service, params|
                   vm.has_ssh = true
                   vm.build_dir = "."
                   vm.build_args = ["--tag=#{_tag}"]
-                  vm.create_args = ["--publish-all", "--privileged", "--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
+                  if d['ports']
+                    vm.ports = d['ports']
+                  end
+                  vm.create_args = ["--privileged", "--dns-search=#{_search}", "--dns=8.8.8.8", "--dns=4.4.4.4", "--hostname=#{_fqdn}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
                 end

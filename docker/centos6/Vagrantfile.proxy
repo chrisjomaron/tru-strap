@@ -34,7 +34,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.name = "dockerhost"
 
       # This setting gives the VM 1024MB of RAM instead of the default 384.
-      v.customize ["modifyvm", :id, "--memory", [ENV['TRUSTRAP_VM_MEM'].to_i, 2048].max]
+      v.customize ["modifyvm", :id, "--memory", [ENV['TRUSTRAP_VM_MEM'].to_i, 4096].max]
  
       # Who has a single core cpu these days anyways?
       cpu_count = 4

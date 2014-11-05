@@ -9,18 +9,27 @@ services:
       - repobranch : handsome-vagrant-docker
     - roles:
       - data                        : agg-mongodb
-        enabled                     : true
+        enabled                     : false
+        ports: 
+        - "27017:27017"
       - data                        : agg-lts-mongodb
-        enabled                     : true
+        enabled                     : false
+        ports: 
+        - "27017:27017"
       - data                        : agg-redis
         enabled                     : true
+        ports: 
+        - "6379:6379"
+        - "6380:6380" 
       - app                         : agg-management-agent
         enabled                     : false
       - app                         : agg-private-api
-        enabled                     : true
+        enabled                     : false
       - app                         : agg-public-api
-        enabled                     : true
+        enabled                     : false
+        ports:
+        - "8090:8090"
       - app                         : agg-performance-test-proxy
         enabled                     : false
       - app                         : agg_kafka
-        enabled                     : true
+        enabled                     : false

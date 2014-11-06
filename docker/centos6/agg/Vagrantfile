@@ -177,6 +177,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       rls.each do |key, value|
         data_set =  value.select {|d| d['data']}
         app_set  =  value.select {|a| a['app']}
+
         # provision data
         data_set.each do |d|
           if d['enabled'] 
@@ -184,7 +185,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             _ts_args = "-r #{_role} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
             _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{_role}"
             _fqdn = set_fqdn(_tag)
-            _search = _fqdn.split('.')[-5..-1].join('.')
             puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for data tier."
               config.vm.define "#{_tag}" do |m|
                 m.vm.provider "docker" do |vm|
@@ -202,15 +202,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 end
               end 
              config.vm.provision "shell", inline: "echo node #{_tag} is very handsome!"
-             # config.vm.provision :shell, :path => "init.sh", :args => _ts_args
+             config.vm.provision :shell, :path => "resolv.sh"
+             #config.vm.provision :shell, :path => "init.sh", :args => _ts_args
           end
         end 
+
       end # rls.each do |key, value|
+
     else
       abort("Service variable: #{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE} is not set in file #{YAML_OPTIONS}, exiting ...")
+    end # if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
   end
 end
 
-end
 
 

@@ -57,7 +57,7 @@
 #               https://github.com/jdeathe/centos-ssh
 
 require 'yaml'
-require "resolv"
+require 'docker'
 
 YAML_OPTIONS = "services.yaml"
 VAGRANTFILE_API_VERSION = "2"
@@ -143,31 +143,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vm.create_args     = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
       vm.vagrant_machine = "dockerhost"
       vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
-      vm.link("etcd.msm.internal:etcd.msm.internal")
+      vm.link("etcd.msm.internal:etcd")
     end
   end
+end
 
-  # TODO: Looks like we might need a vagrant plugin
-  puts "-" * 40
-  puts "Pause, allow Docker to respond to Network Service changes"
-  sleep 5
-
-  # best ask docker for the IP
-  begin
-    puts "-" * 40
-    skydns_ip_raw1 = %x( docker inspect skydns.msm.internal | grep IPAddress )
-    skydns_ip_raw2 = skydns_ip_raw1.split(':')[1].chop.chop
-    @skydns_ip = skydns_ip_raw2.gsub('"', '').gsub(' ', '')
-    if @skydns_ip =~ Resolv::IPv4::Regex ? true : false 
-      puts "Resolved valid IP for skydns container:"
-      puts "==> #{@skydns_ip}"
-    else
-      abort("Could not correctly resolve skydns IP [#{@skydns_ip}], exiting ...")
-    end
-  rescue
-    puts "Skipping skydns IP lookup..."
-  end
-  
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # -------------------------------------------
   # Provision Business Serivices
   # -------------------------------------------
@@ -213,11 +194,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                   if d['ports'] 
                     vm.ports = d['ports'] 
                   end
-                  vm.create_args = ["--privileged", "--dns-search=msm.internal", "--dns=#{@skydns_ip}", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
+                  vm.create_args = ["--privileged", "--dns-search=msm.internal", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
                   vm.vagrant_machine = "dockerhost"
                   vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
-                  vm.link("etcd.msm.internal:etcd.msm.internal")
-                  vm.link("skydns.msm.internal:skydns.msm.internal")
+                  vm.link("etcd.msm.internal:etcd")
+                  vm.link("skydns.msm.internal:skydns")
                 end
               end 
              config.vm.provision "shell", inline: "echo node #{_tag} is very handsome!"

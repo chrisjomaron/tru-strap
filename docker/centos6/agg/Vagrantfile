@@ -144,7 +144,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vm.name            = "etcd.#{TRUSTRAP_DOMAIN}"
       vm.image           = "registry1-eu1.moneysupermarket.com:5000/etcd"
       vm.has_ssh         = false
-      vm.cmd             = ["-peer-addr=0.0.0.0:7001", "-addr=0.0.0.0:4001"]
+      vm.cmd             = ["-peer-addr=etcd.#{TRUSTRAP_DOMAIN}:7001", "-addr=etcd.#{TRUSTRAP_DOMAIN}:4001"]
       vm.create_args     = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
       vm.vagrant_machine = "dockerhost"
       vm.vagrant_vagrantfile = "../Vagrantfile.proxy"

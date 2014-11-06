@@ -1,8 +1,6 @@
 services:
   dev-agg:
-    - dns:
-      - dns-1 : "8.8.8.8"
-      - dns-2 : "4.4.4.4"
+    - domain: msm.internal
     - git:
       - reponame   : msm-provisioning
       - repouser   : pauldavidgilligan-msm
@@ -19,7 +17,7 @@ services:
         - "2221:22"
         - "27017:27017"
       - data                        : agg-redis
-        enabled                     : true
+        enabled                     : false
         ports: 
         - "2222:22"
         - "6379:6379"

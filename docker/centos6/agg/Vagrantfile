@@ -57,7 +57,6 @@
 #               https://github.com/jdeathe/centos-ssh
 
 require 'yaml'
-require 'docker'
 
 YAML_OPTIONS = "services.yaml"
 VAGRANTFILE_API_VERSION = "2"
@@ -109,6 +108,25 @@ puts "TRUSTRAP_ENV          #{TRUSTRAP_ENV}"
 puts "TRUSTRAP_SERVICE      #{TRUSTRAP_SERVICE}"
 
 # -----------------------------------------------------------------------------
+# Services Options
+# -----------------------------------------------------------------------------
+config_options = YAML.load_file(YAML_OPTIONS)
+services = config_options['services']
+services.each do |service, params|
+  if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
+    domain = params.detect {|param| param['domain']}
+    TRUSTRAP_DOMAIN = domain['domain']
+    if TRUSTRAP_DOMAIN
+      puts "  TRUSTRAP_DOMAIN     #{TRUSTRAP_DOMAIN}"
+    else
+      abort("Domain variable: 'domain' is not set in file #{YAML_OPTIONS}, exiting ...")
+    end
+  else
+    abort("Service variable: #{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE} is not set in file #{YAML_OPTIONS}, exiting ...")
+  end
+end # if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
+
+# -----------------------------------------------------------------------------
 # Provision 
 # 1. Network Services  (skydns, etcd)
 # 2. Business Services (services.yaml)
@@ -123,9 +141,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # -------------------------------------------
   config.vm.define "etcd" do |m|
     m.vm.provider "docker" do |vm|
-      vm.name            = "etcd.msm.internal"
+      vm.name            = "etcd.#{TRUSTRAP_DOMAIN}"
       vm.image           = "registry1-eu1.moneysupermarket.com:5000/etcd"
       vm.has_ssh         = false
+      vm.cmd             = ["-peer-addr=0.0.0.0:7001", "-addr=0.0.0.0:4001"]
       vm.create_args     = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
       vm.vagrant_machine = "dockerhost"
       vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
@@ -138,18 +157,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   @mopts = Hash["ETCD_INIT_MACHINE" => "etcd:4001", 
                 "SKYDNS_ADDR" => "0.0.0.0:53", 
                 "SKYDNS_NAMESERVERS" => "8.8.8.8", 
-                "SKYDNS_DOMAIN" => "msm.internal"]
+                "SKYDNS_DOMAIN" => "#{TRUSTRAP_DOMAIN}"]
 
   config.vm.define "skydns" do |m|
     m.vm.provider "docker" do |vm|
-      vm.name            = "skydns.msm.internal"
+      vm.name            = "skydns.#{TRUSTRAP_DOMAIN}"
       vm.image           = "registry1-eu1.moneysupermarket.com:5000/skydns"
       vm.has_ssh         = false
       vm.env             = @mopts
       vm.create_args     = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
       vm.vagrant_machine = "dockerhost"
       vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
-      vm.link("etcd.msm.internal:etcd")
+      vm.link("etcd.#{TRUSTRAP_DOMAIN}:etcd")
     end
   end
 end
@@ -158,66 +177,58 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # -------------------------------------------
   # Provision Business Serivices
   # -------------------------------------------
-  config_options = YAML.load_file(YAML_OPTIONS)
-  services = config_options['services']
   services.each do |service, params|
-    if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
-      puts "-" * 40
-      puts "Processing service options for [#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}]" 
-      dns = params.detect {|param| param['dns']}
-      TRUSTRAP_DNS_ARG = "\"--dns=#{dns['dns'][0]['dns-1']}\", \"--dns=#{dns['dns'][1]['dns-2']}\""
-      puts "Set DNS #{TRUSTRAP_DNS_ARG}"
-      git = params.detect {|param| param['git']}
-      TRUSTRAP_REPONAME   = "#{git['git'][0]['reponame']}"
-      TRUSTRAP_REPOUSER   = "#{git['git'][1]['repouser']}"
-      TRUSTRAP_REPOBRANCH = "#{git['git'][2]['repobranch']}"
-      rls = params.detect {|param| param['roles']}
+    puts "-" * 40
+    puts "Processing service options for [#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}]" 
 
-      puts "-" * 40
-      puts "TRUSTRAP_REPOUSER     #{TRUSTRAP_REPOUSER}"
-      puts "TRUSTRAP_REPONAME     #{TRUSTRAP_REPONAME}"
-      puts "TRUSTRAP_REPOBRANCH   #{TRUSTRAP_REPOBRANCH}"
-      puts "=" * 40
+    git = params.detect {|param| param['git']}
+    TRUSTRAP_REPONAME   = "#{git['git'][0]['reponame']}"
+    TRUSTRAP_REPOUSER   = "#{git['git'][1]['repouser']}"
+    TRUSTRAP_REPOBRANCH = "#{git['git'][2]['repobranch']}"
 
-      # provision multi-machines
-      rls.each do |key, value|
-        data_set =  value.select {|d| d['data']}
-        app_set  =  value.select {|a| a['app']}
+    rls = params.detect {|param| param['roles']}
 
-        # provision data
-        data_set.each do |d|
-          if d['enabled'] 
-            _role = "#{d['data']}"
-            _ts_args = "-r #{_role} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
-            _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{_role}"
-            _fqdn = set_fqdn(_tag)
-            puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for data tier."
-              config.vm.define "#{_tag}" do |m|
-                m.vm.provider "docker" do |vm|
-                  vm.has_ssh = true
-                  vm.build_dir = "."
-                  vm.build_args = ["--tag=#{_tag}"]
-                  if d['ports'] 
-                    vm.ports = d['ports'] 
-                  end
-                  vm.create_args = ["--privileged", "--dns-search=msm.internal", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
-                  vm.vagrant_machine = "dockerhost"
-                  vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
-                  vm.link("etcd.msm.internal:etcd")
-                  vm.link("skydns.msm.internal:skydns")
-                end
-              end 
-             config.vm.provision "shell", inline: "echo node #{_tag} is very handsome!"
-             config.vm.provision :shell, :path => "bin/resolv.sh"
-             config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
-          end
-        end 
+    puts "-" * 40
+    puts "TRUSTRAP_REPOUSER     #{TRUSTRAP_REPOUSER}"
+    puts "TRUSTRAP_REPONAME     #{TRUSTRAP_REPONAME}"
+    puts "TRUSTRAP_REPOBRANCH   #{TRUSTRAP_REPOBRANCH}"
+    puts "=" * 40
 
-      end # rls.each do |key, value|
+    # provision multi-machines
+    rls.each do |key, value|
+      data_set =  value.select {|d| d['data']}
+      app_set  =  value.select {|a| a['app']}
 
-    else
-      abort("Service variable: #{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE} is not set in file #{YAML_OPTIONS}, exiting ...")
-    end # if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
+      # provision data
+      data_set.each do |d|
+        if d['enabled'] 
+          _role = "#{d['data']}"
+          _ts_args = "-r #{_role} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
+          _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{_role}"
+          _fqdn = set_fqdn(_tag)
+          puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for data tier."
+          config.vm.define "#{_tag}" do |m|
+            m.vm.provider "docker" do |vm|
+              vm.has_ssh = true
+              vm.build_dir = "."
+              vm.build_args = ["--tag=#{_tag}"]
+              if d['ports'] 
+                vm.ports = d['ports'] 
+              end
+              vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
+              vm.vagrant_machine = "dockerhost"
+              vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
+              vm.link("etcd.#{TRUSTRAP_DOMAIN}:etcd")
+              vm.link("skydns.#{TRUSTRAP_DOMAIN}:skydns")
+            end
+          end 
+          config.vm.provision "shell", inline: "echo node #{_tag} is very handsome!"
+          config.vm.provision :shell, :path => "bin/resolv.sh"
+          config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
+        end
+      end # data_set.each do |d|
+
+    end # rls.each do |key, value|
   end
 end
 

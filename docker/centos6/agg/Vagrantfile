@@ -135,11 +135,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # -------------------------------------------
   # Provision skydns
   # -------------------------------------------
+  @mopts = Hash["ETCD_INIT_MACHINE" => "etcd:4001", 
+                "SKYDNS_ADDR" => "0.0.0.0:53", 
+                "SKYDNS_NAMESERVERS" => "8.8.8.8", 
+                "SKYDNS_DOMAIN" => "msm.internal"]
+
   config.vm.define "skydns" do |m|
     m.vm.provider "docker" do |vm|
       vm.name            = "skydns.msm.internal"
       vm.image           = "registry1-eu1.moneysupermarket.com:5000/skydns"
       vm.has_ssh         = false
+      vm.env             = @mopts
       vm.create_args     = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
       vm.vagrant_machine = "dockerhost"
       vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
@@ -202,8 +208,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 end
               end 
              config.vm.provision "shell", inline: "echo node #{_tag} is very handsome!"
-             config.vm.provision :shell, :path => "resolv.sh"
-             #config.vm.provision :shell, :path => "init.sh", :args => _ts_args
+             config.vm.provision :shell, :path => "bin/resolv.sh"
+             config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
           end
         end 
 

@@ -117,7 +117,7 @@ services.each do |service, params|
     domain = params.detect {|param| param['domain']}
     TRUSTRAP_DOMAIN = domain['domain']
     if TRUSTRAP_DOMAIN
-      puts "  TRUSTRAP_DOMAIN     #{TRUSTRAP_DOMAIN}"
+      puts "TRUSTRAP_DOMAIN       #{TRUSTRAP_DOMAIN}"
     else
       abort("Domain variable: 'domain' is not set in file #{YAML_OPTIONS}, exiting ...")
     end
@@ -222,7 +222,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               vm.link("skydns.#{TRUSTRAP_DOMAIN}:skydns")
             end
           end 
-          config.vm.provision "shell", inline: "echo node #{_tag} is very handsome!"
+          config.vm.provision "shell", inline: "echo Node #{_tag} is very handsome!"
           config.vm.provision :shell, :path => "bin/resolv.sh"
           config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
         end

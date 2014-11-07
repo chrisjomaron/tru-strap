@@ -1,6 +1,6 @@
 services:
   dev-agg:
-    - domain: msm.internal
+    - domain: hvd.msm.internal
     - git:
       - reponame   : msm-provisioning
       - repouser   : pauldavidgilligan-msm
@@ -17,7 +17,7 @@ services:
         - "2221:22"
         - "27017:27017"
       - data                        : agg-redis
-        enabled                     : false
+        enabled                     : true
         ports: 
         - "2222:22"
         - "6379:6379"

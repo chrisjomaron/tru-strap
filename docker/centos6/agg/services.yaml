@@ -1,6 +1,6 @@
 services:
   dev-agg:
-    - domain: hvd.msm.internal
+    - domain: msm.internal
     - git:
       - reponame   : msm-provisioning
       - repouser   : pauldavidgilligan-msm

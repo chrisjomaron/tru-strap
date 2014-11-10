@@ -35,5 +35,5 @@ This Vagrantfile requires a few environment variables to be set.
 - ```export TRUSTRAP_SERVICE=agg``` The Business Service name.
 
 ### The Business Services Configuration
-This Vagrantfile requires roles and other paramerters to be set in the services.yaml file..
+This Vagrantfile requires roles and other paramerters to be set in the services.yaml file.
 

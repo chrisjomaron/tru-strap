@@ -2,33 +2,36 @@
 ## What is this?
 This is the MSM Public version of the 'tru-strap' script.  Ref: https://github.com/jimfdavies/tru-strap
 
-We have made this repo public so that we can download and start 'tru-strapping' without needing any credentials.  We will pass required credentials as parameters into tru-strap in order for it to download/clone the required private repo(s).
+We have made this repo public so that we can download and start 'tru-strapping' without needing any credentials.  
+We will pass required credentials as parameters into tru-strap in order for it to download/clone the required private repo(s).
 
 ## How do I use it?
-Integrate it with your favourite Virtualisation / Cloud platform eg. AWS User Data, RightScale RightScripts .... or use Vagrant with the handy provided Vagrantfile.
+We run this version of tru-strap via Vagrant using Docker as the VM provider and a centos6 image has been provided.
 
-### Vagrant
-#### Quick Start
+Steps to start the agg (Aggregation Services):
+
 ```
-git clone git@github.com:MSMFG/tru-strap.git
-cd tru-strap
-cp ~/.ssh/myprivategithubkey myprivategithubkey.pem
-export vm_mem=2048
-export init_role=myrole
-export init_env=myenv
-export init_repoprivkeyfile=myprivategithubkey.pem
-vagrant up
+git@github.com:pauldavidgilligan-msm/tru-strap.git
+git checkout handsome-vagrant-docker
+cd docker/centos6/agg/
+vagrant up --no-parallel
 ```
 
-#### Environment Variables
+
+### Documentation
+
+
+
+### Git Authentication
+No provide keys are stored in the VM and ssh key forwarding is being used. You will need to fork
+msm-provisioning, in this example, and setup you own keys on your local machine.
+
+
+### Environment Variables
 This Vagrantfile requires a few environment variables to be set.
 
-##### Required
-- ```init_role``` The Puppet [role](http://www.slideshare.net/PuppetLabs/roles-talk) of the server.
-- ```init_env``` The Puppet environment of the server.
-- ```init_repoprivkeyfile``` The filename (.pem extension) of your private GitHub key which should be copied into this directory.
+- ```export TRUSTRAP_ACCOUNT=msm``` The Account name.
+- ```export TRUSTRAP_USERBASE=gb``` The User base.
+- ```export TRUSTRAP_ENV=dev```     The Environment
+- ```export TRUSTRAP_SERVICE=agg``` The Business Service name.
 
-##### Optional
-- ```init_repouser``` The owner of the github repo, defaults to _MSMFG_
-- ```init_reponame``` The name of the github repo, defaults to _msm-provisioning_
-- ```init_repobranch``` The name of the github branch, defaults to _master_

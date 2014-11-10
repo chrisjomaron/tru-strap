@@ -6,9 +6,9 @@ We have made this repo public so that we can download and start 'tru-strapping' 
 We will pass required credentials as parameters into tru-strap in order for it to download/clone the required private repo(s).
 
 ## How do I use it?
-We run this version of tru-strap via Vagrant using Docker as the VM provider and a centos6 image has been provided.
+We run this version of tru-strap via Vagrant using Docker as the VM provider on a centos 6 linux platform.
 
-Steps to start the agg (Aggregation Services):
+For example to start the agg (Aggregation Services):
 
 ```
 git@github.com:pauldavidgilligan-msm/tru-strap.git
@@ -26,11 +26,14 @@ No provide keys are stored in the VM and ssh key forwarding is being used. You w
 msm-provisioning, in this example, and setup you own keys on your local machine.
 
 
-### Environment Variables
+### Environment Variables
 This Vagrantfile requires a few environment variables to be set.
 
 - ```export TRUSTRAP_ACCOUNT=msm``` The Account name.
 - ```export TRUSTRAP_USERBASE=gb``` The User base.
 - ```export TRUSTRAP_ENV=dev```     The Environment
 - ```export TRUSTRAP_SERVICE=agg``` The Business Service name.
+
+### The Business Services Configuration
+This Vagrantfile requires roles and other paramerters to be set in the services.yaml file..
 

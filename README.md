@@ -17,9 +17,8 @@ cd docker/centos6/agg/
 vagrant up --no-parallel
 ```
 
-
 ### Documentation
-
+More detailed documentation is maintained internally on confluence https://moneysupermarket.atlassian.net/wiki/pages/viewpage.action?pageId=23921911
 
 
 ### Git Authentication

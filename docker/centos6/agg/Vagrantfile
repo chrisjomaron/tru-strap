@@ -58,7 +58,7 @@
 
 require 'yaml'
 
-YAML_OPTIONS = "services.yaml"
+YAML_OPTIONS = "../services.yaml"
 VAGRANTFILE_API_VERSION = "2"
 
 def set_fqdn(tag) 

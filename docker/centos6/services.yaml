@@ -7,7 +7,7 @@ services:
       - repobranch : handsome-vagrant-docker
     - roles:
       - data                        : agg-mongodb
-        enabled                     : false
+        enabled                     : true
         ports: 
         - "2220:22"
         - "27017:27017"
@@ -17,7 +17,7 @@ services:
         - "2221:22"
         - "27017:27017"
       - data                        : agg-redis
-        enabled                     : true
+        enabled                     : false
         ports: 
         - "2222:22"
         - "6379:6379"

@@ -20,6 +20,12 @@ vagrant up --no-parallel
 ### Documentation
 More detailed documentation is maintained internally on confluence https://moneysupermarket.atlassian.net/wiki/pages/viewpage.action?pageId=23921911
 
+### Docker pull(s)
+docker pull shipyard/rethinkdb
+docker pull shipyard/shipyard
+docker pull shipyard/shipyard-cli
+
+docker pull centos
 
 ### Git Authentication
 No provide keys are stored in the VM and ssh key forwarding is being used. You will need to fork

@@ -121,6 +121,13 @@ services.each do |service, params|
     else
       abort("Domain variable: 'domain' is not set in file #{YAML_OPTIONS}, exiting ...")
     end
+    skydns = params.detect {|param| param['skydns']}
+    if skydns
+      TRUSTRAP_WITH_SKYDNS = skydns['skydns']
+    else
+     TRUSTRAP_WITH_SKYDNS = false
+    end
+    puts "TRUSTRAP_WITH_SKYDNS  #{TRUSTRAP_WITH_SKYDNS}"
   else
     abort("Service variable: #{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE} is not set in file #{YAML_OPTIONS}, exiting ...")
   end
@@ -136,42 +143,43 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.pty = true
   config.ssh.forward_agent = true
 
-  # -------------------------------------------
-  # Provision etcd
-  # -------------------------------------------
-  config.vm.define "etcd" do |m|
-    m.vm.provider "docker" do |vm|
-      vm.name            = "etcd.#{TRUSTRAP_DOMAIN}"
-      vm.image           = "registry1-eu1.moneysupermarket.com:5000/etcd"
-      vm.has_ssh         = false
-      vm.cmd             = ["-peer-addr=etcd.#{TRUSTRAP_DOMAIN}:7001", "-addr=etcd.#{TRUSTRAP_DOMAIN}:4001"]
-      vm.create_args     = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
-      vm.vagrant_machine = "dockerhost"
-      vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
+  if TRUSTRAP_WITH_SKYDNS
+    # -------------------------------------------
+    # Provision etcd
+    # -------------------------------------------
+    config.vm.define "etcd" do |m|
+      m.vm.provider "docker" do |vm|
+        vm.name            = "etcd.#{TRUSTRAP_DOMAIN}"
+        vm.image           = "registry1-eu1.moneysupermarket.com:5000/etcd"
+        vm.has_ssh         = false
+        vm.cmd             = ["-peer-addr=etcd.#{TRUSTRAP_DOMAIN}:7001", "-addr=etcd.#{TRUSTRAP_DOMAIN}:4001"]
+        vm.vagrant_machine = "dockerhost"
+        vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
+      end
     end
-  end
 
-  # -------------------------------------------
-  # Provision skydns
-  # -------------------------------------------
-  @mopts = Hash["ETCD_INIT_MACHINE" => "etcd:4001", 
-                "SKYDNS_ADDR" => "0.0.0.0:53", 
-                "SKYDNS_NAMESERVERS" => "8.8.8.8", 
-                "SKYDNS_DOMAIN" => "#{TRUSTRAP_DOMAIN}"]
+    # -------------------------------------------
+    # Provision skydns
+    # -------------------------------------------
+    @mopts = Hash["ETCD_MACHINES" => "http://etcd.#{TRUSTRAP_DOMAIN}:4001",
+                  "SKYDNS_ADDR" => "0.0.0.0:53", 
+                  "SKYDNS_NAMESERVERS" => "8.8.8.8:53", 
+                  "SKYDNS_DOMAIN" => "#{TRUSTRAP_DOMAIN}"]
 
-  config.vm.define "skydns" do |m|
-    m.vm.provider "docker" do |vm|
-      vm.name            = "skydns.#{TRUSTRAP_DOMAIN}"
-      vm.image           = "registry1-eu1.moneysupermarket.com:5000/skydns"
-      vm.has_ssh         = false
-      vm.env             = @mopts
-      vm.create_args     = ["--dns=8.8.8.8", "--dns=4.4.4.4"]
-      vm.vagrant_machine = "dockerhost"
-      vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
-      vm.link("etcd.#{TRUSTRAP_DOMAIN}:etcd")
+    config.vm.define "skydns" do |m|
+      m.vm.provider "docker" do |vm|
+        vm.name            = "skydns.#{TRUSTRAP_DOMAIN}"
+        vm.image           = "skynetservices/skydns"
+        vm.has_ssh         = false
+        vm.env             = @mopts
+        vm.vagrant_machine = "dockerhost"
+        vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
+        vm.link("etcd.#{TRUSTRAP_DOMAIN}:etcd")
+      end
     end
-  end
-end
+  end # if TRUSTRAP_WITH_SKYDNS
+
+end # Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # -------------------------------------------
@@ -218,13 +226,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
               vm.vagrant_machine = "dockerhost"
               vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
-              vm.link("etcd.#{TRUSTRAP_DOMAIN}:etcd")
-              vm.link("skydns.#{TRUSTRAP_DOMAIN}:skydns")
+              if TRUSTRAP_WITH_SKYDNS
+                vm.link("skydns.#{TRUSTRAP_DOMAIN}:skydns")
+              end
             end
           end 
           config.vm.provision "shell", inline: "echo Node #{_tag} is very handsome!"
-          config.vm.provision :shell, :path => "bin/resolv.sh"
-          config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
+          if TRUSTRAP_WITH_SKYDNS
+            config.vm.provision :shell, :path => "bin/resolv.sh"
+          end
+          #config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
         end
       end # data_set.each do |d|
 

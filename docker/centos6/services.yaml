@@ -1,13 +1,14 @@
 services:
   dev-agg:
     - domain: msm.internal
+    - skydns: true
     - git:
       - reponame   : msm-provisioning
       - repouser   : pauldavidgilligan-msm
       - repobranch : handsome-vagrant-docker
     - roles:
       - data                        : agg-mongodb
-        enabled                     : true
+        enabled                     : false
         ports: 
         - "2220:22"
         - "27017:27017"

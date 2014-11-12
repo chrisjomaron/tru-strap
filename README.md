@@ -1,12 +1,12 @@
 # Tru Strap
 ## What is this?
-This is the MSM Public version of the 'tru-strap' script.  Ref: https://github.com/jimfdavies/tru-strap
+This is the MSM/TSM Public version of the 'tru-strap' script.  Ref: https://github.com/jimfdavies/tru-strap
 
 We have made this repo public so that we can download and start 'tru-strapping' without needing any credentials.  
 We will pass required credentials as parameters into tru-strap in order for it to download/clone the required private repo(s).
 
 ## How do I use it?
-We run this version of tru-strap via Vagrant using Docker as the VM provider on a centos 6 linux platform.
+We run this version of tru-strap via Vagrant using Docker as the VM provider on a centos 6 linux platform and space has been provided for both MSM and TSM company groups.
 
 For example to start the agg (Aggregation Services):
 
@@ -16,6 +16,7 @@ git checkout handsome-vagrant-docker
 cd tru-strap/docker/msm/centos6/agg
 vagrant up --no-parallel
 ```
+
 
 ### Documentation
 More detailed documentation is maintained internally on confluence: https://moneysupermarket.atlassian.net/wiki/pages/viewpage.action?pageId=23921911

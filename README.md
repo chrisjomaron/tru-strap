@@ -37,6 +37,10 @@ This Vagrantfile requires a few environment variables to be set.
 - ```export TRUSTRAP_ENV=dev```     The Environment
 - ```export TRUSTRAP_SERVICE=agg``` The Business Service name.
 
+### Trustrap Original
+
+The original init.sh trustrap init.sh has been extended slightly but with the aim of maintaining compatability with the original and RightScale deployments.
+
 ### The Business Services Configuration
 This Vagrantfile requires roles and other paramerters to be set in the services.yaml file.
 

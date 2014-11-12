@@ -8,33 +8,22 @@
 # Description:  Mixin ruby for provisioning Vagrantfile.
 
 # -----------------------------------------------------------------------------
-# Provision SkyDNS
+# Provision SkyDNS on ETCD
 # -----------------------------------------------------------------------------
-config.vm.define "etcd" do |m|
-  m.vm.provider "docker" do |vm|
-    vm.name            = "etcd.#{TRUSTRAP_DOMAIN}"
-    vm.image           = "registry1-eu1.moneysupermarket.com:5000/etcd"
-    vm.has_ssh         = false
-    vm.cmd             = ["-peer-addr=etcd.#{TRUSTRAP_DOMAIN}:7001", "-addr=etcd.#{TRUSTRAP_DOMAIN}:4001"]
-    vm.vagrant_machine = "dockerhost"
-    vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
-  end
-end
-
-@mopts = Hash["ETCD_MACHINES" => "http://etcd.#{TRUSTRAP_DOMAIN}:4001",
+@mopts = Hash["ETCD_MACHINES" => "http://go-skydns.#{TRUSTRAP_DOMAIN}:4001",
               "SKYDNS_ADDR" => "0.0.0.0:53",
               "SKYDNS_NAMESERVERS" => "8.8.8.8:53",
               "SKYDNS_DOMAIN" => "#{TRUSTRAP_DOMAIN}"]
 
-config.vm.define "skydns" do |m|
+config.vm.define "go-skydns" do |m|
   m.vm.provider "docker" do |vm|
-    vm.name            = "skydns.#{TRUSTRAP_DOMAIN}"
-    vm.image           = "skynetservices/skydns"
+    vm.name            = "go-skydns.#{TRUSTRAP_DOMAIN}"
+    vm.image           = "pauldavidgilligan/go-skydns"
     vm.has_ssh         = false
     vm.env             = @mopts
+    vm.create_args = ["--privileged", "--dns=8.8.8.8"]
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
-    vm.link("etcd.#{TRUSTRAP_DOMAIN}:etcd")
   end
 end
 

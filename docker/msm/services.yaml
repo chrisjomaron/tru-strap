@@ -1,7 +1,7 @@
 services:
   dev-agg:
     - domain: msm.internal
-    - skydns: false
+    - skydns: true
     - git:
       - reponame   : msm-provisioning
       - repouser   : pauldavidgilligan-msm
@@ -12,7 +12,7 @@ services:
       - data                        : agg-lts-mongodb
         enabled                     : false
       - data                        : agg-redis
-        enabled                     : true
+        enabled                     : false
       - app                         : agg-management-agent
         enabled                     : false
       - app                         : agg-private-api
@@ -22,5 +22,5 @@ services:
       - app                         : agg-performance-test-proxy
         enabled                     : false
       - app                         : agg_kafka
-        enabled                     : true
+        enabled                     : false
 

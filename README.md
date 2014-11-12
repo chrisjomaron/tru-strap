@@ -13,18 +13,14 @@ For example to start the agg (Aggregation Services):
 ```
 git@github.com:pauldavidgilligan-msm/tru-strap.git
 git checkout handsome-vagrant-docker
-cd docker/centos6/agg/
+cd tru-strap/docker/msm/centos6/agg
 vagrant up --no-parallel
 ```
 
 ### Documentation
-More detailed documentation is maintained internally on confluence https://moneysupermarket.atlassian.net/wiki/pages/viewpage.action?pageId=23921911
+More detailed documentation is maintained internally on confluence: https://moneysupermarket.atlassian.net/wiki/pages/viewpage.action?pageId=23921911
 
 ### Docker pull(s)
-docker pull shipyard/rethinkdb
-docker pull shipyard/shipyard
-docker pull shipyard/shipyard-cli
-
 docker pull centos
 
 ### Git Authentication

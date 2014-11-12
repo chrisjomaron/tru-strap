@@ -1,0 +1,14 @@
+services:
+  dev-myservice:
+    - domain: tsm.internal
+    - skydns: true
+    - git:
+      - reponame   : tsm-provisioning
+      - repouser   : pauldavidgilligan-tsm
+      - repobranch : handsome-vagrant-docker
+    - roles:
+      - data                        : mydatabase
+        enabled                     : false
+      - app                         : myapp
+        enabled                     : false
+

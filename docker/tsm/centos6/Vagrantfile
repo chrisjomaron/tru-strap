@@ -1,0 +1,200 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# Vagrantfile   Provision TSM trustrap services.
+#
+# Authors:      Paul Gilligan, <Paul.Gilligan@moneysupermarket.com>
+#
+# Description:  This is a multi-host docker provider provisioning Vagrantfile.
+#
+# Environment:  You must set some environment values in or to drive this:
+#
+#               export TRUSTRAP_ACCOUNT=msm    
+#               export TRUSTRAP_USERBASE=gb
+#               export TRUSTRAP_ENV=dev
+#               export TRUSTRAP_SERVICE=agg 
+#
+#               The TRUSTRAP_SERVICE is new, this represents a group of roles
+#               that are defined in the msm-provisoning puppet repository.
+#
+#               The combination TRUSTRAP_ENV and TRUSTRAP_SERVICE is used to 
+#               select a set of roles from the services.yaml file and these
+#               values are used to drive the provisioning of individual docker
+#               vm's.
+#
+# Authentication:
+#
+#               Access to private git repositories (TRUSTRAP_REPONAME) requires
+#               you to setup your own git private key on the machine that you
+#               run vagrant from, SSH agent forwarding is set to true.
+#
+# Docker Dev Args:
+#
+#               Docker extended args for development:
+#
+#               --privileged=true      Give extended privileges to this container
+# 
+# Running:      Once you have setup the environment and services.yaml simply
+#               run vagrant up.
+#
+#               You can access your new node from the node name via vargant:
+#
+#               vagrant ssh msm-gb-dev-agg-lts-mongodb
+#
+#               You can halt docker containers using vagrant halt.
+#
+#               You can destroy docker containers using vagrant destroy.
+#
+#               This has beed designed to be re-entrant, i.e. it can be re-run.    
+# 
+# Original:     https://github.com/MSMFG/tru-strap
+# Git version:  https://github.com/pauldavidgilligan-msm/tru-strap
+# Git branch:   handsome-vagrant-docker
+#  
+# useful links: http://docs.docker.com/reference/builder/#usage
+#               https://docs.docker.com/reference/commandline/cli/
+#               http://blog.zenika.com/index.php?post/2014/10/07/Setting-up-a-development-environment-using-Docker-and-Vagrant
+#               https://github.com/jdeathe/centos-ssh
+
+require 'yaml'
+
+YAML_OPTIONS = "../../services.yaml"
+VAGRANTFILE_API_VERSION = "2"
+
+def set_fqdn(tag) 
+  _fqdn = tag.gsub('_', '.')
+  _fqdn = _fqdn.gsub('-', '.')
+  return _fqdn.split('.').reverse.join('.') + '.internal'
+end
+
+# -----------------------------------------------------------------------------
+# Environment Options
+# -----------------------------------------------------------------------------
+eval(IO.read("../../../mixin/vagrant.environment.options.mixin.rb"), binding)
+puts "-" * 40
+puts "TRUSTRAP, vagrant docker provisioning"
+puts "-" * 40
+puts "TRUSTRAP_ACCOUNT      #{TRUSTRAP_ACCOUNT}"
+puts "TRUSTRAP_USERBASE     #{TRUSTRAP_USERBASE}"
+puts "TRUSTRAP_ENV          #{TRUSTRAP_ENV}"
+puts "TRUSTRAP_SERVICE      #{TRUSTRAP_SERVICE}"
+
+# -----------------------------------------------------------------------------
+# Services Options
+# -----------------------------------------------------------------------------
+config_options = YAML.load_file(YAML_OPTIONS)
+services = config_options['services']
+eval(IO.read("../../../mixin/vagrant.service.options.mixin.rb"), binding)
+
+# -----------------------------------------------------------------------------
+# Provision 
+# 1. Network Services  (skydns, etcd)
+# 2. Business Services (services.yaml)
+# -----------------------------------------------------------------------------
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.ssh.username = "dev-opts"
+  config.ssh.pty = true
+  config.ssh.forward_agent = true
+
+  if TRUSTRAP_WITH_SKYDNS
+    eval(IO.read("../../../mixin/vagrant.service.skydns.mixin.rb"), binding)
+  end # if TRUSTRAP_WITH_SKYDNS
+
+end # Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  # -------------------------------------------
+  # Provision Business Serivices
+  # -------------------------------------------
+  services.each do |service, params|
+    puts "-" * 40
+    puts "Processing service options for [#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}]" 
+
+    git = params.detect {|param| param['git']}
+    TRUSTRAP_REPONAME   = "#{git['git'][0]['reponame']}"
+    TRUSTRAP_REPOUSER   = "#{git['git'][1]['repouser']}"
+    TRUSTRAP_REPOBRANCH = "#{git['git'][2]['repobranch']}"
+
+    rls = params.detect {|param| param['roles']}
+
+    puts "-" * 40
+    puts "TRUSTRAP_REPOUSER     #{TRUSTRAP_REPOUSER}"
+    puts "TRUSTRAP_REPONAME     #{TRUSTRAP_REPONAME}"
+    puts "TRUSTRAP_REPOBRANCH   #{TRUSTRAP_REPOBRANCH}"
+    puts "=" * 40
+
+    # provision multi-machines
+    rls.each do |key, value|
+      data_set =  value.select {|d| d['data']}
+      app_set  =  value.select {|a| a['app']}
+
+      # provision data
+      data_set.each do |d|
+        if d['enabled'] 
+          _role = "#{d['data']}"
+          _ts_args = "-r #{_role} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
+          _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{_role}"
+          _fqdn = set_fqdn(_tag)
+          puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for data tier."
+          config.vm.define "#{_tag}" do |m|
+            m.vm.provider "docker" do |vm|
+              vm.has_ssh = true
+              vm.build_dir = "."
+              vm.build_args = ["--tag=#{_tag}"]
+              if d['ports'] 
+                vm.ports = d['ports'] 
+              end
+              vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
+              vm.vagrant_machine = "dockerhost"
+              vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
+              if TRUSTRAP_WITH_SKYDNS
+                vm.link("skydns.#{TRUSTRAP_DOMAIN}:skydns")
+              end
+            end
+          end 
+          config.vm.provision "shell", inline: "echo Node #{_tag} is very handsome!"
+          if TRUSTRAP_WITH_SKYDNS
+            config.vm.provision :shell, :path => "bin/resolv.sh"
+          end
+          # config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
+        end
+      end 
+
+      # provision app
+      app_set.each do |a|
+        if a['enabled']
+          _role = "#{a['app']}"
+          _ts_args = "-r #{_role} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
+          _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{_role}"
+          _fqdn = set_fqdn(_tag)
+          puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for app tier."
+          config.vm.define "#{_tag}" do |m|
+            m.vm.provider "docker" do |vm|
+              vm.has_ssh = true
+              vm.build_dir = "."
+              vm.build_args = ["--tag=#{_tag}"]
+              if a['ports']
+                vm.ports = a['ports']
+              end
+              vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
+              vm.vagrant_machine = "dockerhost"
+              vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
+              if TRUSTRAP_WITH_SKYDNS
+                vm.link("skydns.#{TRUSTRAP_DOMAIN}:skydns")
+              end
+            end
+          end
+          config.vm.provision "shell", inline: "echo Node #{_tag} is very handsome!"
+          if TRUSTRAP_WITH_SKYDNS
+            config.vm.provision :shell, :path => "bin/resolv.sh"
+          end
+          #config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
+        end
+      end 
+
+    end # rls.each do |key, value|
+  end
+end
+
+
+

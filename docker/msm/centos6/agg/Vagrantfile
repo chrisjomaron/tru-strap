@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 #
-# Vagrantfile   Provision MSM/TSM trustrap services.
+# Vagrantfile   Provision MSM trustrap services.
 #
 # Authors:      Paul Gilligan, <Paul.Gilligan@moneysupermarket.com>
 #
@@ -58,7 +58,7 @@
 
 require 'yaml'
 
-YAML_OPTIONS = "../services.yaml"
+YAML_OPTIONS = "../../services.yaml"
 VAGRANTFILE_API_VERSION = "2"
 
 def set_fqdn(tag) 
@@ -70,35 +70,7 @@ end
 # -----------------------------------------------------------------------------
 # Environment Options
 # -----------------------------------------------------------------------------
-ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
-
-if ENV['TRUSTRAP_ACCOUNT']
-    TRUSTRAP_ACCOUNT = ENV['TRUSTRAP_ACCOUNT']
-else
-  abort("Environment variable: 'TRUSTRAP_ACCOUNT' is not set, exiting ...")
-end
-
-if ENV['TRUSTRAP_USERBASE']
-    TRUSTRAP_USERBASE = ENV['TRUSTRAP_USERBASE']
-else
-  abort("Environment variable: 'TRUSTRAP_USERBASE' is not set, exiting ...")
-end
-
-if ENV['TRUSTRAP_ENV']
-    TRUSTRAP_ENV = ENV['TRUSTRAP_ENV']
-else
-  abort("Environment variable: 'TRUSTRAP_ENV' is not set, exiting ...")
-end
-
-if ENV['TRUSTRAP_SERVICE']
-    TRUSTRAP_SERVICE = ENV['TRUSTRAP_SERVICE']
-else
-  abort("Environment variable: 'TRUSTRAP_SERVICE' is not set, exiting ...")
-end
-
-# -----------------------------------------------------------------------------
-# Environment Options
-# -----------------------------------------------------------------------------
+eval(IO.read("../../../mixin/vagrant.environment.options.mixin.rb"), binding)
 puts "-" * 40
 puts "TRUSTRAP, vagrant docker provisioning"
 puts "-" * 40
@@ -112,26 +84,7 @@ puts "TRUSTRAP_SERVICE      #{TRUSTRAP_SERVICE}"
 # -----------------------------------------------------------------------------
 config_options = YAML.load_file(YAML_OPTIONS)
 services = config_options['services']
-services.each do |service, params|
-  if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
-    domain = params.detect {|param| param['domain']}
-    TRUSTRAP_DOMAIN = domain['domain']
-    if TRUSTRAP_DOMAIN
-      puts "TRUSTRAP_DOMAIN       #{TRUSTRAP_DOMAIN}"
-    else
-      abort("Domain variable: 'domain' is not set in file #{YAML_OPTIONS}, exiting ...")
-    end
-    skydns = params.detect {|param| param['skydns']}
-    if skydns
-      TRUSTRAP_WITH_SKYDNS = skydns['skydns']
-    else
-     TRUSTRAP_WITH_SKYDNS = false
-    end
-    puts "TRUSTRAP_WITH_SKYDNS  #{TRUSTRAP_WITH_SKYDNS}"
-  else
-    abort("Service variable: #{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE} is not set in file #{YAML_OPTIONS}, exiting ...")
-  end
-end # if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
+eval(IO.read("../../../mixin/vagrant.service.options.mixin.rb"), binding)
 
 # -----------------------------------------------------------------------------
 # Provision 
@@ -144,39 +97,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.forward_agent = true
 
   if TRUSTRAP_WITH_SKYDNS
-    # -------------------------------------------
-    # Provision etcd
-    # -------------------------------------------
-    config.vm.define "etcd" do |m|
-      m.vm.provider "docker" do |vm|
-        vm.name            = "etcd.#{TRUSTRAP_DOMAIN}"
-        vm.image           = "registry1-eu1.moneysupermarket.com:5000/etcd"
-        vm.has_ssh         = false
-        vm.cmd             = ["-peer-addr=etcd.#{TRUSTRAP_DOMAIN}:7001", "-addr=etcd.#{TRUSTRAP_DOMAIN}:4001"]
-        vm.vagrant_machine = "dockerhost"
-        vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
-      end
-    end
-
-    # -------------------------------------------
-    # Provision skydns
-    # -------------------------------------------
-    @mopts = Hash["ETCD_MACHINES" => "http://etcd.#{TRUSTRAP_DOMAIN}:4001",
-                  "SKYDNS_ADDR" => "0.0.0.0:53", 
-                  "SKYDNS_NAMESERVERS" => "8.8.8.8:53", 
-                  "SKYDNS_DOMAIN" => "#{TRUSTRAP_DOMAIN}"]
-
-    config.vm.define "skydns" do |m|
-      m.vm.provider "docker" do |vm|
-        vm.name            = "skydns.#{TRUSTRAP_DOMAIN}"
-        vm.image           = "skynetservices/skydns"
-        vm.has_ssh         = false
-        vm.env             = @mopts
-        vm.vagrant_machine = "dockerhost"
-        vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
-        vm.link("etcd.#{TRUSTRAP_DOMAIN}:etcd")
-      end
-    end
+    eval(IO.read("../../../mixin/vagrant.service.skydns.mixin.rb"), binding)
   end # if TRUSTRAP_WITH_SKYDNS
 
 end # Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -225,7 +146,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               end
               vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
               vm.vagrant_machine = "dockerhost"
-              vm.vagrant_vagrantfile = "../Vagrantfile.proxy"
+              vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
               if TRUSTRAP_WITH_SKYDNS
                 vm.link("skydns.#{TRUSTRAP_DOMAIN}:skydns")
               end
@@ -235,9 +156,43 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           if TRUSTRAP_WITH_SKYDNS
             config.vm.provision :shell, :path => "bin/resolv.sh"
           end
+          # config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
+        end
+      end 
+
+      # provision app
+      app_set.each do |a|
+        if a['enabled']
+          _role = "#{a['app']}"
+          _ts_args = "-r #{_role} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
+          _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{_role}"
+          _fqdn = set_fqdn(_tag)
+          puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for app tier."
+          config.vm.define "#{_tag}" do |m|
+            m.vm.provider "docker" do |vm|
+              vm.has_ssh = true
+              vm.build_dir = "."
+              vm.build_args = ["--tag=#{_tag}"]
+              if a['ports']
+                vm.ports = a['ports']
+              end
+              vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
+              vm.vagrant_machine = "dockerhost"
+              vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
+              if TRUSTRAP_WITH_SKYDNS
+                vm.link("skydns.#{TRUSTRAP_DOMAIN}:skydns")
+              end
+            end
+          end
+          config.vm.provision "shell", inline: "echo Node #{_tag} is very handsome!"
+          if TRUSTRAP_WITH_SKYDNS
+            config.vm.provision :shell, :path => "bin/resolv.sh"
+          end
           #config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
         end
-      end # data_set.each do |d|
+      end 
+
+
 
     end # rls.each do |key, value|
   end

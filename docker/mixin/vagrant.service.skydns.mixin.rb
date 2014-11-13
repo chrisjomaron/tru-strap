@@ -10,18 +10,18 @@
 # -----------------------------------------------------------------------------
 # Provision SkyDNS on ETCD
 # -----------------------------------------------------------------------------
-@mopts = Hash["ETCD_MACHINES" => "http://go-skydns.#{TRUSTRAP_DOMAIN}:4001",
+@mopts = Hash["ETCD_MACHINES" => "http://etcd.#{TRUSTRAP_DOMAIN}:4001",
               "SKYDNS_ADDR" => "0.0.0.0:53",
               "SKYDNS_NAMESERVERS" => "8.8.8.8:53",
               "SKYDNS_DOMAIN" => "#{TRUSTRAP_DOMAIN}"]
 
-config.vm.define "go-skydns" do |m|
+config.vm.define "#{SKYDNS_NAME}" do |m|
   m.vm.provider "docker" do |vm|
-    vm.name            = "go-skydns.#{TRUSTRAP_DOMAIN}"
+    vm.name            = "#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}"
     vm.image           = "pauldavidgilligan/go-skydns"
-    vm.has_ssh         = false
+    vm.has_ssh         = false # yes we have ssh, but fool vagrant so no shells are ran.
     vm.env             = @mopts
-    vm.create_args = ["--privileged", "--dns=8.8.8.8"]
+    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{SKYDNS_NAME}"]
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
   end

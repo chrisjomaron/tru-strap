@@ -58,6 +58,7 @@
 
 require 'yaml'
 
+SKYDNS_NAME = "go-skydns"
 YAML_OPTIONS = "../../services.yaml"
 VAGRANTFILE_API_VERSION = "2"
 
@@ -148,7 +149,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               vm.vagrant_machine = "dockerhost"
               vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
               if TRUSTRAP_WITH_SKYDNS
-                vm.link("skydns.#{TRUSTRAP_DOMAIN}:skydns")
+                vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:skydns")
               end
             end
           end 
@@ -156,7 +157,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           if TRUSTRAP_WITH_SKYDNS
             config.vm.provision :shell, :path => "bin/resolv.sh"
           end
-          # config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
+          config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
         end
       end 
 
@@ -180,7 +181,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               vm.vagrant_machine = "dockerhost"
               vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
               if TRUSTRAP_WITH_SKYDNS
-                vm.link("skydns.#{TRUSTRAP_DOMAIN}:skydns")
+                vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:skydns")
               end
             end
           end

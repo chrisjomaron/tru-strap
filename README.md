@@ -1,4 +1,8 @@
-#Tru Strap
+#Tru Strap 
+
+## handsome-vagrant-docker feature branch
+
+![dockers](https://libcom.org/files/Dockers%20-%20North%20End%20King's%20Lynn.jpg)
 
 ## What is this?
 This is the MSM/TSM public version of the 'tru-strap' script from https://github.com/jimfdavies/tru-strap. We have made this repo public so that we can download and start 'tru-strapping' without needing any credentials.  

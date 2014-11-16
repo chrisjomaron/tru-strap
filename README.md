@@ -86,6 +86,7 @@ docker pull pauldavidgilligan/docker-centos6-base-image
 ### Issues
 * https://github.com/docker/docker/issues/5135
 * https://github.com/pauldavidgilligan-msm/go-skydns/issues/1
+* https://github.com/pauldavidgilligan-msm/go-skydns/issues/2
 
 ### Network Services
 
@@ -161,7 +162,6 @@ The original init.sh trustrap init.sh has been extended slightly but with the ai
 
 * Work out how skydns does data setup.
 * Add provisioning self tests.
-* One script with parameters for the shell provisioning.
 
 ## License
 

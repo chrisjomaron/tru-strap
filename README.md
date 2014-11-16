@@ -11,13 +11,20 @@ This is the MSM/TSM public version of the 'tru-strap' script from https://github
 ## How do I use it?
 We run this version of tru-strap via Vagrant using Docker as the VM provider on a centos 6 linux platform and space has been provided for both MSM and TSM company groups.
 
+The base image used is **pauldavidgilligan/docker-centos6-base-image** this provides:
+
+* centos 6
+* supervisord
+* supervisorctl
+* default dev-opts user with sudo
+
 ### Vagrant Part
 
 For example to start the agg (Aggregation Services):
 ```
 export TRUSTRAP_ACCOUNT=msm
 export TRUSTRAP_USERBASE=gb
-export TRUSTRAP_ENV=dev
+export TRUSTRAP_ENV=hvd
 export TRUSTRAP_SERVICE=agg
 
 git@github.com:pauldavidgilligan-msm/tru-strap.git
@@ -58,14 +65,23 @@ List docker images:
 docker images
 ```
 
-
-
 ### Install
 This will run both network and business services under a common docker host that is configured to create a VM under Oracle's Virtual Box. Although it is possible to run this vagrant project under boot2docker on Mac OS X and windows it is recommended that you simply install an Oracle Virtual Box VM with centos 6.6 64bit iso image and run the project there. Some issues with the docker autofs limits have been seen under MAC OS X.
 
 * http://isoredirect.centos.org/centos/6/isos/x86_64/
 * https://www.virtualbox.org/wiki/Downloads
 * http://www.liquidweb.com/kb/how-to-install-docker-on-centos-6/
+
+After ensuring the the VM's network is running the General steps are:
+
+```
+su -
+rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+yum update
+usermod -a -G docker dev-opts
+docker search pauldavidgilligan
+docker pull pauldavidgilligan/docker-centos6-base-image
+```
 
 ### Issues
 * https://github.com/docker/docker/issues/5135
@@ -119,10 +135,10 @@ https://moneysupermarket.atlassian.net/wiki/pages/viewpage.action?pageId=2392191
 ## Docker pull(s)
 
 ```
-docker pull centos
+docker pull pauldavidgilligan/docker-centos6-base-image
 ```
 
-Also as an image from go-skydns is required the build of go-skydns also pulls cetnos 6 for you.
+Also as an image from go-skydns is required the build of go-skydns also pulls the base image for you.
 
 ## Git Authentication
 No provide keys are stored in the VM and ssh key forwarding is being used. You will need to fork

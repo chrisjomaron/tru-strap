@@ -20,7 +20,7 @@ config.vm.define "#{SKYDNS_NAME}" do |m|
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
   end
 end
-config.vm.provision :shell, :path => "bin/dockerenv.py"
+#config.vm.provision :shell, :path => "bin/dockerenv.py"
 config.vm.provision :shell, :path => "bin/hosts.sh"
 config.vm.provision :shell, :path => "bin/startskydns.sh"
 

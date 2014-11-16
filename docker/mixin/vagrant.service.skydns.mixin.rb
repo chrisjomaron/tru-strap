@@ -10,6 +10,15 @@
 # -----------------------------------------------------------------------------
 # Provision SkyDNS on ETCD
 # -----------------------------------------------------------------------------
+$script = <<SCRIPT
+echo Setting go-skydns environment
+echo # profile.d env file for go-skydns                 > /etc/profile.d/go-skydns.sh
+echo export ETCD_ADDR=etcd.msm.internal:4001           >> /etc/profile.d/go-skydns.sh 
+echo export ETCD_BIND_ADDR=0.0.0.0:4001                >> /etc/profile.d/go-skydns.sh
+echo export ETCD_PEER_ADDR=etcd.msm.internal:7001      >> /etc/profile.d/go-skydns.sh
+echo export ETCD_PEER_BIND_ADDR=etcd.msm.internal:7001 >> /etc/profile.d/go-skydns.sh
+SCRIPT
+
 config.vm.define "#{SKYDNS_NAME}" do |m|
   m.vm.provider "docker" do |vm|
     vm.name            = "#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}"
@@ -20,7 +29,7 @@ config.vm.define "#{SKYDNS_NAME}" do |m|
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
   end
 end
-#config.vm.provision :shell, :path => "bin/dockerenv.py"
+config.vm.provision "shell", inline: $script
 config.vm.provision :shell, :path => "bin/hosts.sh"
 config.vm.provision :shell, :path => "bin/startskydns.sh"
 

@@ -72,7 +72,7 @@ This will run both network and business services under a common docker host that
 * https://www.virtualbox.org/wiki/Downloads
 * http://www.liquidweb.com/kb/how-to-install-docker-on-centos-6/
 
-After ensuring the the VM's network is running the General steps are:
+After ensuring the the VM's network is running and installing vagrant the general steps are:
 
 ```
 su -

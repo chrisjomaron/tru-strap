@@ -93,17 +93,18 @@ eval(IO.read("../../../mixin/vagrant.service.options.mixin.rb"), binding)
 # 2. Business Services (services.yaml)
 # -----------------------------------------------------------------------------
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
   config.ssh.username = "dev-opts"
   config.ssh.pty = true
   config.ssh.forward_agent = true
 
+  # -------------------------------------------
+  # Provision Network Serivices
+  # -------------------------------------------
   if TRUSTRAP_WITH_SKYDNS
     eval(IO.read("../../../mixin/vagrant.service.skydns.mixin.rb"), binding)
   end # if TRUSTRAP_WITH_SKYDNS
 
-end # Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # -------------------------------------------
   # Provision Business Serivices
   # -------------------------------------------
@@ -149,7 +150,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               vm.vagrant_machine = "dockerhost"
               vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
               if TRUSTRAP_WITH_SKYDNS
-                vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:skydns")
+                vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
               end
             end
           end 
@@ -181,7 +182,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               vm.vagrant_machine = "dockerhost"
               vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
               if TRUSTRAP_WITH_SKYDNS
-                vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:skydns")
+                vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
               end
             end
           end
@@ -192,8 +193,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           #config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
         end
       end 
-
-
 
     end # rls.each do |key, value|
   end

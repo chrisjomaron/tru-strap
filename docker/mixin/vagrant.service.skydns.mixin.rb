@@ -17,6 +17,10 @@ echo export ETCD_ADDR=etcd.msm.internal:4001           >> /etc/profile.d/go-skyd
 echo export ETCD_BIND_ADDR=0.0.0.0:4001                >> /etc/profile.d/go-skydns.sh
 echo export ETCD_PEER_ADDR=etcd.msm.internal:7001      >> /etc/profile.d/go-skydns.sh
 echo export ETCD_PEER_BIND_ADDR=etcd.msm.internal:7001 >> /etc/profile.d/go-skydns.sh
+echo export SKYDNS_ADD=0.0.0.0:53                      >> /etc/profile.d/go-skydns.sh
+echo export SKYDNS_DOMAIN=msm.internal                 >> /etc/profile.d/go-skydns.sh
+echo export SKYDNS_NAMESERVERS=8.8.8.8:53,8.8.4.4:53   >> /etc/profile.d/go-skydns.sh
+echo export ETCD_MACHINES="http://localhost:4001,http://etcd.msm.internal:4001" >> /etc/profile.d/go-skydns.sh
 SCRIPT
 
 config.vm.define "#{SKYDNS_NAME}" do |m|
@@ -29,7 +33,7 @@ config.vm.define "#{SKYDNS_NAME}" do |m|
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
   end
 end
+
 config.vm.provision "shell", inline: $script
 config.vm.provision :shell, :path => "bin/hosts.sh"
 config.vm.provision :shell, :path => "bin/startskydns.sh"
-

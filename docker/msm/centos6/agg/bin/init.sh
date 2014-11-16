@@ -151,13 +151,13 @@ curl -sSL https://get.rvm.io | bash -s stable
 source /etc/profile.d/rvm.sh
 rvm reload
 
-_bold "Installing Ruby ${RUBYVERSION}"
+_bold "Installing RVM Ruby ${RUBYVERSION}"
 rvm install ${RUBYVERSION}
 rvm use ${RUBYVERSION}
 
 _bold "Installing puppet tools"
 yum install -y http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm 
-yum install -y ruby-devel rubygems puppet facter
+yum install -y puppet facter
 
 GITCMD="git clone --progress -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git ${TRUSTRAP_REPODIR}"
 PUPPET_DIR="${TRUSTRAP_REPODIR}/puppet"

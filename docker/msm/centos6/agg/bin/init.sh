@@ -17,11 +17,13 @@
 
 # Usage:        ./init.sh -r agg-redis -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
 
-VERSION=0.0.2
+VERSION=0.0.3
+NOW=$(date "+%Y_%m_%d_%H")
 SCRIPTNAME=`basename $0`
 RUBYVERSION="ruby-2.1.4"
-NOW=$(date "+%Y_%m_%d_%H")
+SKYDNS_NAME=go-skydns
 PROGRESS_LOG=/tmp/progress_${NOW}.log
+PROCESS_CONF=/etc/supervisord.conf
 
 echo $(date "+%Y-%m-%d %H:%M:%S") "Docker Provision Start" > ${PROGRESS_LOG}
 
@@ -116,6 +118,14 @@ while test -n "$1"; do
   shift
 done
 
+# skip if are skydns node
+grep -q "${SKYDNS_NAME}" "${PROCESS_CONF}"
+if [[ $? -eq 0 ]] ;
+then
+  printf ", skipped due to ${SKYDNS_NAME} ${PROCESS_CONF}"
+  exit
+fi
+
 # -----------------------------------------------------------------------------
 # Check
 # -----------------------------------------------------------------------------
@@ -147,8 +157,7 @@ rvm use ${RUBYVERSION}
 
 _bold "Installing puppet tools"
 yum install -y http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm 
-yum install -y puppet 
-yum install -y facter
+yum install -y ruby-devel rubygems puppet facter
 
 GITCMD="git clone --progress -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git ${TRUSTRAP_REPODIR}"
 PUPPET_DIR="${TRUSTRAP_REPODIR}/puppet"

@@ -158,7 +158,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           if TRUSTRAP_WITH_SKYDNS
             config.vm.provision :shell, :path => "bin/resolv.sh"
           end
-          #config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
+          config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
         end
       end 
 

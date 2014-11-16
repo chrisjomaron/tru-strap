@@ -87,6 +87,7 @@ docker pull pauldavidgilligan/docker-centos6-base-image
 * https://github.com/docker/docker/issues/5135
 * https://github.com/pauldavidgilligan-msm/go-skydns/issues/1
 * https://github.com/pauldavidgilligan-msm/go-skydns/issues/2
+* https://github.com/pauldavidgilligan-msm/go-skydns/issues/3
 
 ### Network Services
 

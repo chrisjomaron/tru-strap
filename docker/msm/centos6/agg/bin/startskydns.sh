@@ -9,7 +9,7 @@ SKYDNS_NAME=go-skydns
 grep -q "${SKYDNS_NAME}" "${CONF}"
 if [[ $? -eq 0 ]] ;
 then
-  /usr/bin/supervisorctl start etcd
+#  /usr/bin/supervisorctl start etcd
   /usr/bin/supervisorctl start skydns
 else
   printf ", skipped ${CONF}"

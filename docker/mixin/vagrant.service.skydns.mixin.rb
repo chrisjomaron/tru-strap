@@ -8,19 +8,17 @@
 # Description:  Mixin ruby for provisioning Vagrantfile.
 
 # -----------------------------------------------------------------------------
-# Provision SkyDNS on ETCD
+# Provision SkyDNS via ETCD
 # -----------------------------------------------------------------------------
 $script = <<SCRIPT
-echo Setting go-skydns environment
-echo # profile.d env file for go-skydns                 > /etc/profile.d/go-skydns.sh
-echo export ETCD_ADDR=etcd.msm.internal:4001           >> /etc/profile.d/go-skydns.sh 
-echo export ETCD_BIND_ADDR=0.0.0.0:4001                >> /etc/profile.d/go-skydns.sh
-echo export ETCD_PEER_ADDR=etcd.msm.internal:7001      >> /etc/profile.d/go-skydns.sh
-echo export ETCD_PEER_BIND_ADDR=etcd.msm.internal:7001 >> /etc/profile.d/go-skydns.sh
-echo export SKYDNS_ADDR=0.0.0.0:53                     >> /etc/profile.d/go-skydns.sh
-echo export SKYDNS_DOMAIN=msm.internal                 >> /etc/profile.d/go-skydns.sh
-echo export SKYDNS_NAMESERVERS=8.8.8.8:53,8.8.4.4:53   >> /etc/profile.d/go-skydns.sh
-echo export ETCD_MACHINES="http://localhost:4001,http://etcd.msm.internal:4001" >> /etc/profile.d/go-skydns.sh
+RESULT=`pgrep etcd`
+if [ "${RESULT:-null}" = null ]; then
+  echo
+else
+  echo "Configuring skydns"
+  /usr/bin/curl -XPUT http://127.0.0.1:4001/v2/keys/skydns/config \
+    -d value='{"dns_addr":"0.0.0.0:53","ttl":3600, "domain":"msm.internal", "nameservers": ["8.8.8.8:53","8.8.4.4:53"]}'
+fi
 SCRIPT
 
 config.vm.define "#{SKYDNS_NAME}" do |m|

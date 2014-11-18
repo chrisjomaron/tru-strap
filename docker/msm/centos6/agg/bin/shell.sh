@@ -2,12 +2,6 @@
 #
 # supporting provsioning shell script.
 # 
-# agruments:
-#
-#          SKYDNS_NAME, default 'go-skydns'
-#          
-#
-#
 
 NOW=$(date "+%Y_%m_%d_%H")
 VERSION=0.1.0

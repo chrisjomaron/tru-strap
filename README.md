@@ -184,69 +184,6 @@ This Vagrantfile requires a few environment variables to be set.
 
 ## Testing
 
-### Test Run - vagrant up --no-parallel
-
-Sample output for one node:
-
-```
-----------------------------------------
-TRUSTRAP, vagrant docker provisioning
-----------------------------------------
-TRUSTRAP_ACCOUNT      msm
-TRUSTRAP_USERBASE     gb
-TRUSTRAP_ENV          dev
-TRUSTRAP_SERVICE      agg
-TRUSTRAP_DOMAIN       msm.internal
-TRUSTRAP_WITH_SKYDNS  true
-----------------------------------------
-Processing service options for [dev-agg]
-----------------------------------------
-TRUSTRAP_REPOUSER     pauldavidgilligan-msm
-TRUSTRAP_REPONAME     msm-provisioning
-TRUSTRAP_REPOBRANCH   handsome-vagrant-docker
-========================================
-Provisioning role agg-redis docker(enabled) fqdn [redis.agg.dev.gb.msm.internal] for data tier.
-Bringing machine 'go-skydns' up with 'docker' provider...
-Bringing machine 'msm-gb-dev-agg-redis' up with 'docker' provider...
-==> msm-gb-dev-agg-redis: Building the container from a Dockerfile...
-    msm-gb-dev-agg-redis: Image: 2a0bce572c5b
-==> msm-gb-dev-agg-redis: Fixed port collision for 22 => 2222. Now on port 2200.
-==> msm-gb-dev-agg-redis: Creating the container...
-    msm-gb-dev-agg-redis:   Name: agg_msm-gb-dev-agg-redis_1416238575
-    msm-gb-dev-agg-redis:  Image: 2a0bce572c5b
-    msm-gb-dev-agg-redis: Volume: /home/dev-opts/Projects/sandbox/tru-strap/docker/msm/centos6/agg:/vagrant
-    msm-gb-dev-agg-redis:   Port: 2200:22
-    msm-gb-dev-agg-redis:   Link: go-skydns.msm.internal:go-skydns
-    msm-gb-dev-agg-redis:  
-    msm-gb-dev-agg-redis: Container created: 682b60e7841af60e
-==> msm-gb-dev-agg-redis: Starting container...
-==> msm-gb-dev-agg-redis: Waiting for machine to boot. This may take a few minutes...
-    msm-gb-dev-agg-redis: SSH address: 172.17.0.71:22
-    msm-gb-dev-agg-redis: SSH username: dev-opts
-    msm-gb-dev-agg-redis: SSH auth method: private key
-    msm-gb-dev-agg-redis: Warning: Connection refused. Retrying...
-    msm-gb-dev-agg-redis: Warning: Remote connection disconnect. Retrying...
-    msm-gb-dev-agg-redis: Warning: Authentication failure. Retrying...
-==> msm-gb-dev-agg-redis: Machine booted and ready!
-==> msm-gb-dev-agg-redis: Running provisioner: shell...
-    msm-gb-dev-agg-redis: Running: inline script
-==> msm-gb-dev-agg-redis: Setting go-skydns environment
-==> msm-gb-dev-agg-redis: Running provisioner: shell...
-    msm-gb-dev-agg-redis: Running: /tmp/vagrant-shell20141117-8232-64kgy9.sh
-==> msm-gb-dev-agg-redis: Found go-skydns at 172.17.0.70, updated /etc/hosts
-==> msm-gb-dev-agg-redis: Running provisioner: shell...
-    msm-gb-dev-agg-redis: Running: /tmp/vagrant-shell20141117-8232-1ce1am6.sh
-==> msm-gb-dev-agg-redis: , skipped /etc/supervisord.conf
-==> msm-gb-dev-agg-redis: Running provisioner: shell...
-    msm-gb-dev-agg-redis: Running: inline script
-==> msm-gb-dev-agg-redis: Node msm-gb-dev-agg-redis is very handsome!
-==> msm-gb-dev-agg-redis: Running provisioner: shell...
-    msm-gb-dev-agg-redis: Running: /tmp/vagrant-shell20141117-8232-1u99pm8.sh
-==> msm-gb-dev-agg-redis: Found go-skydns at 172.17.0.70, updating /etc/resolv.conf.
-==> msm-gb-dev-agg-redis: Running provisioner: shell...
-    msm-gb-dev-agg-redis: Running: /tmp/vagrant-shell20141117-8232-1go7h8w.sh
-```
-
 You can monitor progress from a business node for example:
 
 ```

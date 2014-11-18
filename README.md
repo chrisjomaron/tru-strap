@@ -7,7 +7,6 @@
 ## What is this?
 This is the MSM/TSM public version of the 'tru-strap' script from https://github.com/jimfdavies/tru-strap. We have made this repo public so that we can download and start 'tru-strapping' without needing any credentials.  
 
-
 ## How do I use it?
 We run this version of tru-strap via Vagrant using Docker as the VM provider on a centos 6 linux platform and space has been provided for both MSM and TSM company groups.
 
@@ -92,6 +91,18 @@ docker pull pauldavidgilligan/docker-centos6-base-image
 ### Network Services
 
 Network services such as skydns, loggly, haproxy and others are required to support the business services that we run under the docker host. Currently an image is available that combines both skydns and etcd on one docker image.
+
+Etcd /skydns/config is used for the configuration for skydns rather than the environment, and during provisioning of the go-skydns node you will see for example:
+
+```
+==> go-skydns: Configuring skydns
+==> go-skydns: {"action":"set","node":{"key":"/skydns/config","value":"{\"dns_addr\":\"0.0.0.0:53\",\"ttl\":3600, \"domain\":\"msm.internal\", \"nameservers\": [\"8.8.8.8:53\",\"8.8.4.4:53\"]}","modifiedIndex":3,"createdIndex":3}}
+```
+And then from a docker container as a business node you can test the dns with:
+
+```
+dig SRV agg-redis1.agg.dev.gb.msm.internal
+```
 
 * https://github.com/pauldavidgilligan-msm/go-skydns
 
@@ -275,11 +286,6 @@ a.miek.nl.		21434	IN	A	176.58.119.54
 ## Trustrap Original
 
 The original init.sh trustrap init.sh has been extended slightly but with the aim of maintaining compatability with the original and RightScale deployments.
-
-## TODO
-
-* Work out how skydns does data setup.
-* Add provisioning self tests.
 
 ## License
 

@@ -102,9 +102,26 @@ And then from a docker container as a business node you can test the dns with:
 
 ```
 dig SRV agg-redis1.agg.dev.gb.msm.internal
+
+[dev-opts@redis ~]$ dig SRV agg-redis1.agg.dev.gb.msm.internal
+
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.30.rc1.el6 <<>> SRV agg-redis1.agg.dev.gb.msm.internal
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 51486
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; QUESTION SECTION:
+;agg-redis1.agg.dev.gb.msm.internal. IN	SRV
+
+;; ANSWER SECTION:
+agg-redis1.agg.dev.gb.msm.internal. 17 IN SRV	10 100 80 n1.agg-redis1.agg.dev.gb.msm.internal.
+
+;; ADDITIONAL SECTION:
+n1.agg-redis1.agg.dev.gb.msm.internal. 17 IN A	172.17.0.8
+
 ```
 
-* https://github.com/pauldavidgilligan-msm/go-skydns
 
 ### Business Services
 These are defined in the services.yaml and the name represent not only the hostnames of the final docker containers but also the provisioning roles for puppet if required.

@@ -17,8 +17,8 @@
 
 # Usage:        ./init.sh -r agg-redis -e dev -u pauldavidgilligan-msm -n msm-provisioning -b handsome-vagrant-docker
 
-VERSION=0.0.3
 NOW=$(date "+%Y_%m_%d_%H")
+VERSION=0.0.3
 SCRIPTNAME=`basename $0`
 RUBYVERSION="ruby-2.1.4"
 SKYDNS_NAME=go-skydns
@@ -49,7 +49,6 @@ function _err {
   echo $(date "+%Y-%m-%d %H:%M:%S") $1 >> ${PROGRESS_LOG}
 }
 
-# functions
 function usage {
 cat <<EOF
 
@@ -63,10 +62,6 @@ cat <<EOF
     -b| --repobranch       the git repository branch name.
     
 EOF
-}
-
-function print_version {
-  echo $1 $2
 }
 
 # -----------------------------------------------------------------------------
@@ -85,7 +80,7 @@ while test -n "$1"; do
     exit
     ;;
   --version|-v)
-    print_version $SCRIPTNAME $VERSION
+    echo $SCRIPTNAME $VERSION
     exit
     ;;
   --role|-r)
@@ -118,7 +113,10 @@ while test -n "$1"; do
   shift
 done
 
-# skip if are skydns node
+# -----------------------------------------------------------------------------
+# Check
+# -----------------------------------------------------------------------------
+
 grep -q "${SKYDNS_NAME}" "${PROCESS_CONF}"
 if [[ $? -eq 0 ]] ;
 then
@@ -126,9 +124,7 @@ then
   exit
 fi
 
-# -----------------------------------------------------------------------------
-# Check
-# -----------------------------------------------------------------------------
+
 _bold "Verifying ${SCRIPTNAME}"
 if [[ ${TRUSTRAP_ROLE} == "" || ${TRUSTRAP_ENV} == "" || ${TRUSTRAP_REPOUSER} == "" || ${TRUSTRAP_REPONAME} == "" || ${TRUSTRAP_REPOBRANCH} == "" ]]; then
   _err ", missing argument(s)."

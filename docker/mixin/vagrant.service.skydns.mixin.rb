@@ -33,5 +33,5 @@ config.vm.define "#{SKYDNS_NAME}" do |m|
 end
 
 config.vm.provision "shell", inline: $script
-config.vm.provision :shell, :path => "bin/hosts.sh"
-config.vm.provision :shell, :path => "bin/startskydns.sh"
+config.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
+config.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m start -d #{TRUSTRAP_DOMAIN}"

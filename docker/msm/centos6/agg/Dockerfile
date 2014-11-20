@@ -5,11 +5,12 @@ MAINTAINER Paul Gilligan<Paul.Gilligan@moneysupermarket.com>
 # Get Centos-6 Update
 # -----------------------------------------------------------------------------
 RUN yum update -y
+RUN yum reinstall -y glibc-common
 
 # -----------------------------------------------------------------------------
-# Need to set LOCALE for puppet
+# Some tools
 # -----------------------------------------------------------------------------
-ENV LC_ALL en_GB.utf8
+RUN yum install -y htop figlet 
 
 # -----------------------------------------------------------------------------
 # Finish up

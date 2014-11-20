@@ -24,6 +24,8 @@ SKYDNS_NAME=go-skydns
 PROGRESS_LOG=/tmp/progress_${NOW}.log
 PROCESS_CONF=/etc/supervisord.conf
 
+export LC_ALL=en_GB.utf8
+
 echo $(date "+%Y-%m-%d %H:%M:%S") "Docker Provision Start" > ${PROGRESS_LOG}
 
 # -----------------------------------------------------------------------------
@@ -208,6 +210,8 @@ echo "msmid_repobranch=${TRUSTRAP_REPOBRANCH}"  >> /etc/facter/facts.d/init_cust
 # Pull the puppet string
 # -----------------------------------------------------------------------------
 _bold "Provison with puppet apply"
+figlet -f digital TruStrap
+
 puppet apply /etc/puppet/manifests/site.pp
 
 _line

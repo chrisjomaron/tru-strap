@@ -15,7 +15,7 @@ services:
         enabled                     : false
       - data                        : agg-redis
         alias                       : agg-redis1
-        enabled                     : true
+        enabled                     : false
       - app                         : agg-management-agent
         enabled                     : false
       - app                         : agg-private-api

@@ -2,6 +2,19 @@
 #
 # supporting provsioning shell script.
 # 
+# shell.sh      Provision MSM/TSM trustrap services.
+#
+# Authors:      Paul Gilligan, <Paul.Gilligan@moneysupermarket.com>
+#
+# Description:  Provision  MSM/TSM Vagrant Docker container networks
+#               including go-skydns configuations.
+#
+#               This has beed designed to be re-entrant, i.e. it can be re-run.    
+# 
+# Original:     https://github.com/MSMFG/tru-strap
+# Git version:  https://github.com/pauldavidgilligan-msm/tru-strap
+# Git branch:   handsome-vagrant-docker
+
 
 NOW=$(date "+%Y_%m_%d_%H")
 VERSION=0.1.0
@@ -18,7 +31,7 @@ cat <<EOF
     -h| --help             this usage text.
     -v| --version          the version.
     -n| --name             the skydns name.
-    -m| --mode             the processing mode (hosts, resolv, start).
+    -m| --mode             the processing mode (hosts, resolv, start, config).
     -d| --domain           the dns domain name (msm.internal, tsm.internal).
     
 EOF
@@ -73,6 +86,16 @@ function update_start {
   fi
 }
 
+function update_config {
+  RESULT=`pgrep etcd`
+  if [ "${RESULT:-null}" = null ]; then
+    echo
+  else
+    echo "Configuring skydns service at /v2/keys/skydns/config"
+    /usr/bin/curl -XPUT http://127.0.0.1:4001/v2/keys/skydns/config \
+      -d value="{\"dns_addr\":\"0.0.0.0:53\",\"ttl\":3600, \"domain\": \"${DOMAIN_NAME}\", \"nameservers\": [\"8.8.8.8:53\",\"8.8.4.4:53\"]}"
+  fi
+}
 
 # -------------------------------------------
 # Process Command Line Params
@@ -119,7 +142,7 @@ if [[ ${SKYDNS_NAME} == "" || ${SHELL_MODE} == "" || ${DOMAIN_NAME} == "" ]]; th
   exit 1
 fi
 
-MODES="hosts resolv start"
+MODES="hosts resolv start config"
 if echo "$MODES" | grep -q "$SHELL_MODE"; then
   echo "Mode is ${SHELL_MODE}"
 else
@@ -147,6 +170,9 @@ case "${SHELL_MODE}" in
     ;;
   start) 
     update_start
+    ;;
+  config)
+    update_config
     ;;
 esac
 

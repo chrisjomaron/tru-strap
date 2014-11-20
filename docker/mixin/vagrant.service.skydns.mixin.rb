@@ -10,17 +10,6 @@
 # -----------------------------------------------------------------------------
 # Provision SkyDNS via ETCD
 # -----------------------------------------------------------------------------
-$script = <<SCRIPT
-RESULT=`pgrep etcd`
-if [ "${RESULT:-null}" = null ]; then
-  echo
-else
-  echo "Configuring skydns"
-  /usr/bin/curl -XPUT http://127.0.0.1:4001/v2/keys/skydns/config \
-    -d value='{"dns_addr":"0.0.0.0:53","ttl":3600, "domain":"msm.internal", "nameservers": ["8.8.8.8:53","8.8.4.4:53"]}'
-fi
-SCRIPT
-
 config.vm.define "#{SKYDNS_NAME}" do |m|
   m.vm.provider "docker" do |vm|
     vm.name            = "#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}"
@@ -30,8 +19,8 @@ config.vm.define "#{SKYDNS_NAME}" do |m|
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
   end
-  m.vm.provision "shell", inline: $script
-  m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
-  m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m start -d #{TRUSTRAP_DOMAIN}"
+  m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m config -d #{TRUSTRAP_DOMAIN}"
+  m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d  #{TRUSTRAP_DOMAIN}"
+  m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m start -d  #{TRUSTRAP_DOMAIN}"
 end
 

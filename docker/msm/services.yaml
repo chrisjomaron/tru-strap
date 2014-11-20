@@ -8,10 +8,13 @@ services:
       - repobranch : handsome-vagrant-docker
     - roles:
       - data                        : agg-mongodb
+        alias                       : agg-mongodb1
         enabled                     : false
       - data                        : agg-lts-mongodb
+        alias                       : agg-lts-mongodb1
         enabled                     : false
       - data                        : agg-redis
+        alias                       : agg-redis1
         enabled                     : true
       - app                         : agg-management-agent
         enabled                     : false

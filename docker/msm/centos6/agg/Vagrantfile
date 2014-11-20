@@ -134,9 +134,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       data_set.each do |d|
         if d['enabled'] 
           _role = "#{d['data']}"
+          _alias = "#{d['alias']}"
           _ts_args = "-r #{_role} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
           _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{_role}"
-          _fqdn = set_fqdn(_tag)
+          _fqdn = _alias.empty? ? set_fqdn(_tag) : _alias
           puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for data tier."
           config.vm.define "#{_tag}" do |m|
             m.vm.provider "docker" do |vm|
@@ -167,9 +168,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       app_set.each do |a|
         if a['enabled']
           _role = "#{a['app']}"
+          _alias = "#{a['alias']}"
           _ts_args = "-r #{_role} -e #{TRUSTRAP_ENV} -u #{TRUSTRAP_REPOUSER} -n #{TRUSTRAP_REPONAME} -b #{TRUSTRAP_REPOBRANCH}"
           _tag = "#{TRUSTRAP_ACCOUNT}-#{TRUSTRAP_USERBASE}-#{TRUSTRAP_ENV}-#{_role}"
-          _fqdn = set_fqdn(_tag)
+          _fqdn = _alias.empty? ? set_fqdn(_tag) : _alias
           puts "Provisioning role #{_role} docker(enabled) fqdn [#{_fqdn}] for app tier."
           config.vm.define "#{_tag}" do |m|
             m.vm.provider "docker" do |vm|

@@ -89,7 +89,7 @@ function update_start {
 function update_config {
   RESULT=`pgrep etcd`
   if [ "${RESULT:-null}" = null ]; then
-    echo
+    printf ", skipped config"
   else
     echo "Configuring skydns service at /v2/keys/skydns/config"
     /usr/bin/curl -XPUT http://127.0.0.1:4001/v2/keys/skydns/config \

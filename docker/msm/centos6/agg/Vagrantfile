@@ -11,7 +11,7 @@
 #
 #               export TRUSTRAP_ACCOUNT=msm    
 #               export TRUSTRAP_USERBASE=gb
-#               export TRUSTRAP_ENV=dev
+#               export TRUSTRAP_ENV=hvd
 #               export TRUSTRAP_SERVICE=agg 
 #
 #               The TRUSTRAP_SERVICE is new, this represents a group of roles
@@ -153,12 +153,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
               end
             end
+            m.vm.provision "shell", inline: "echo Node #{_tag} is very handsome!"
+            if TRUSTRAP_WITH_SKYDNS
+              m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
+            end
+            m.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
           end 
-          config.vm.provision "shell", inline: "echo Node #{_tag} is very handsome!"
-          if TRUSTRAP_WITH_SKYDNS
-            config.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
-          end
-          config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
         end
       end 
 
@@ -185,12 +185,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                 vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
               end
             end
+            m.vm.provision "shell", inline: "echo Node #{_tag} is very handsome!"
+            if TRUSTRAP_WITH_SKYDNS
+              m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
+            end
+            m.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
           end
-          config.vm.provision "shell", inline: "echo Node #{_tag} is very handsome!"
-          if TRUSTRAP_WITH_SKYDNS
-            config.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
-          end
-          #config.vm.provision :shell, :path => "bin/init.sh", :args => _ts_args
         end
       end 
 

@@ -30,8 +30,8 @@ config.vm.define "#{SKYDNS_NAME}" do |m|
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
   end
+  m.vm.provision "shell", inline: $script
+  m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
+  m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m start -d #{TRUSTRAP_DOMAIN}"
 end
 
-config.vm.provision "shell", inline: $script
-config.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
-config.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m start -d #{TRUSTRAP_DOMAIN}"

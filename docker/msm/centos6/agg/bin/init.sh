@@ -20,7 +20,6 @@
 NOW=$(date "+%Y_%m_%d_%H")
 VERSION=0.0.3
 SCRIPTNAME=`basename $0`
-RUBYVERSION="ruby-2.1.4"
 SKYDNS_NAME=go-skydns
 PROGRESS_LOG=/tmp/progress_${NOW}.log
 PROCESS_CONF=/etc/supervisord.conf
@@ -116,14 +115,12 @@ done
 # -----------------------------------------------------------------------------
 # Check
 # -----------------------------------------------------------------------------
-
 grep -q "${SKYDNS_NAME}" "${PROCESS_CONF}"
 if [[ $? -eq 0 ]] ;
 then
   printf ", skipped due to ${SKYDNS_NAME} ${PROCESS_CONF}"
   exit
 fi
-
 
 _bold "Verifying ${SCRIPTNAME}"
 if [[ ${TRUSTRAP_ROLE} == "" || ${TRUSTRAP_ENV} == "" || ${TRUSTRAP_REPOUSER} == "" || ${TRUSTRAP_REPONAME} == "" || ${TRUSTRAP_REPOBRANCH} == "" ]]; then
@@ -142,19 +139,9 @@ if [[ -d "${TRUSTRAP_REPODIR}" ]]; then
   echo "Removed previous git repostory ${TRUSTRAP_REPODIR}"
 fi
 
-_bold "Installing RVM"
-curl -sSL https://get.rvm.io | bash -s stable 
-source /etc/profile.d/rvm.sh
-rvm reload
-
-_bold "Installing RVM Ruby ${RUBYVERSION}"
-rvm install ${RUBYVERSION}
-rvm use ${RUBYVERSION}
-
-_bold "Installing puppet tools"
-yum install -y http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm 
-yum install -y puppet facter
-
+# -----------------------------------------------------------------------------
+# Git clone
+# -----------------------------------------------------------------------------
 GITCMD="git clone --progress -b ${TRUSTRAP_REPOBRANCH} git@github.com:${TRUSTRAP_REPOUSER}/${TRUSTRAP_REPONAME}.git ${TRUSTRAP_REPODIR}"
 PUPPET_DIR="${TRUSTRAP_REPODIR}/puppet"
 PUPPET_BASE_FILE="Puppetfile.base"
@@ -167,11 +154,9 @@ fi
 _bold "Git: ${GITCMD}"
 `${GITCMD}`
 
-_bold "Installing puppet gems"
-gem install librarian-puppet --no-rdoc --no-ri 
-gem install hiera-eyaml --no-ri --no-rdoc
-gem install puppet --no-rdoc --no-ri
-
+# -----------------------------------------------------------------------------
+# Puppet
+# -----------------------------------------------------------------------------
 _bold "Installing trustrap puppet from ${PUPPET_DIR}"
 rm -rf /etc/puppet ; ln -s ${PUPPET_DIR} /etc/puppet 
 rm /etc/hiera.yaml ; ln -s /etc/puppet/hiera.yaml /etc/hiera.yaml
@@ -197,14 +182,7 @@ librarian-puppet install --verbose
 librarian-puppet show
 
 # -----------------------------------------------------------------------------
-# Use RVM to revert Ruby version to back to system default (1.8.7)
-# this is required due to changes in the yaml parser in ruby 2+
-# -----------------------------------------------------------------------------
-rvm --default use system
-  
-# -----------------------------------------------------------------------------
 # Set factor values 
-# TODO: @Jim some duplication!
 # -----------------------------------------------------------------------------
 _bold "Set Facter values"
 mkdir -m 0600 -p /etc/facter/facts.d

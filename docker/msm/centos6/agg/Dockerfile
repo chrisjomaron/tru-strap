@@ -1,4 +1,4 @@
-FROM pauldavidgilligan/docker-centos6-base-image 
+FROM pauldavidgilligan/docker-centos6-puppet-ruby215
 MAINTAINER Paul Gilligan<Paul.Gilligan@moneysupermarket.com>
 
 # -----------------------------------------------------------------------------

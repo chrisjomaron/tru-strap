@@ -1,5 +1,5 @@
 services:
-  dev-agg:
+  hvd-agg:
     - domain: msm.internal
     - skydns: true
     - git:
@@ -8,9 +8,9 @@ services:
       - repobranch : handsome-vagrant-docker
     - roles:
       - data                        : agg-mongodb
-        enabled                     : false
+        enabled                     : true
       - data                        : agg-lts-mongodb
-        enabled                     : false
+        enabled                     : true
       - data                        : agg-redis
         enabled                     : true
       - app                         : agg-management-agent

@@ -154,6 +154,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               end
             end
             m.vm.provision "shell", inline: "echo Node #{_tag} is very handsome!"
+            m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
             if TRUSTRAP_WITH_SKYDNS
               m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
             end
@@ -186,6 +187,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               end
             end
             m.vm.provision "shell", inline: "echo Node #{_tag} is very handsome!"
+            m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
             if TRUSTRAP_WITH_SKYDNS
               m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
             end

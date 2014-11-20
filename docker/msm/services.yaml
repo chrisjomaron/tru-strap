@@ -9,14 +9,15 @@ services:
     - roles:
       - data                        : agg-mongodb
         alias                       : agg-mongodb1
-        enabled                     : false
+        enabled                     : true
       - data                        : agg-lts-mongodb
         alias                       : agg-lts-mongodb1
-        enabled                     : false
+        enabled                     : true
       - data                        : agg-redis
         alias                       : agg-redis1
-        enabled                     : false
+        enabled                     : true
       - app                         : agg-management-agent
+        alias                       : agg-management-agent1
         enabled                     : false
       - app                         : agg-private-api
         enabled                     : false

@@ -27,8 +27,11 @@ export TRUSTRAP_ENV=dev
 export TRUSTRAP_SERVICE=agg
 
 git@github.com:pauldavidgilligan-msm/tru-strap.git
+
 git checkout handsome-vagrant-docker
+
 cd tru-strap/docker/msm/centos6/agg
+
 vagrant up --no-parallel
 ```
 
@@ -76,9 +79,13 @@ After ensuring the the VM's network is running and installing vagrant the genera
 ```
 su -
 rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
 yum update
+
 usermod -a -G docker dev-opts
+
 docker search pauldavidgilligan
+
 docker pull pauldavidgilligan/docker-centos6-base-image
 ```
 

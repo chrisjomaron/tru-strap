@@ -187,6 +187,7 @@ cat /etc/puppet/Puppetfiles/${PUPPET_BASE_FILE} /etc/puppet/Puppetfiles/${PUPPET
 cd /etc/puppet
 librarian-puppet install --verbose
 librarian-puppet show
+echo -e "\e[0m"
 
 # -----------------------------------------------------------------------------
 # Set factor values 

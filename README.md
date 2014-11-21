@@ -23,7 +23,7 @@ For example to start the agg (Aggregation Services):
 ```
 export TRUSTRAP_ACCOUNT=msm
 export TRUSTRAP_USERBASE=gb
-export TRUSTRAP_ENV=dev
+export TRUSTRAP_ENV=hvd
 export TRUSTRAP_SERVICE=agg
 
 git@github.com:pauldavidgilligan-msm/tru-strap.git

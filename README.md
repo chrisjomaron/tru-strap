@@ -129,7 +129,6 @@ n1.agg-redis1.agg.dev.gb.msm.internal. 17 IN A	172.17.0.8
 
 ```
 
-
 ### Business Services
 These are defined in the services.yaml and the name represent not only the hostnames of the final docker containers but also the provisioning roles for puppet if required.
 
@@ -175,8 +174,6 @@ https://moneysupermarket.atlassian.net/wiki/pages/viewpage.action?pageId=2392191
 docker pull pauldavidgilligan/go-skydns
 docker pull pauldavidgilligan/docker-centos6-puppet-ruby215
 ```
-
-Also as an image from go-skydns is required the build of go-skydns also pulls the base image for you.
 
 ## Git Authentication
 No provide keys are stored in the VM and ssh key forwarding is being used. You will need to fork

@@ -165,7 +165,8 @@ https://moneysupermarket.atlassian.net/wiki/pages/viewpage.action?pageId=2392191
 ## Docker pull(s)
 
 ```
-docker pull pauldavidgilligan/docker-centos6-base-image
+docker pull pauldavidgilligan/go-skydns
+docker pull pauldavidgilligan/docker-centos6-puppet-ruby215
 ```
 
 Also as an image from go-skydns is required the build of go-skydns also pulls the base image for you.
@@ -179,7 +180,7 @@ This Vagrantfile requires a few environment variables to be set.
 
 - ```export TRUSTRAP_ACCOUNT=msm``` The Account name.
 - ```export TRUSTRAP_USERBASE=gb``` The User base.
-- ```export TRUSTRAP_ENV=dev```     The Environment
+- ```export TRUSTRAP_ENV=hvd```     The Environment(hvd for this project needed in msm-provisioning)
 - ```export TRUSTRAP_SERVICE=agg``` The Business Service name.
 
 ## Testing

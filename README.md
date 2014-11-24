@@ -78,10 +78,16 @@ After ensuring the the VM's network is running and installing vagrant the genera
 
 ```
 su -
+
 rpm -iUvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 
 yum update
 
+rpm -ivh https://dl.bintray.com/mitchellh/vagrant/vagrant_1.6.5_x86_64.rpm
+
+yum -y install docker-io
+service docker start
+chkconfig docker on
 usermod -a -G docker dev-opts
 
 docker search pauldavidgilligan

@@ -85,6 +85,7 @@ yum update
 
 rpm -ivh https://dl.bintray.com/mitchellh/vagrant/vagrant_1.6.5_x86_64.rpm
 
+yum erase docker
 yum -y install docker-io
 service docker start
 chkconfig docker on

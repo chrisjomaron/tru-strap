@@ -1,7 +1,8 @@
 services:
   hvd-agg:
     - domain: msm.internal
-    - skydns: true
+    - skydns: false
+    - ejbca: true
     - git:
       - reponame   : msm-provisioning
       - repouser   : pauldavidgilligan-msm
@@ -9,16 +10,16 @@ services:
     - roles:
       - data                        : agg-mongodb
         alias                       : agg-mongodb1
-        enabled                     : true
+        enabled                     : false
       - data                        : agg-lts-mongodb
         alias                       : agg-lts-mongodb1
-        enabled                     : true
+        enabled                     : false
       - data                        : agg-redis
         alias                       : agg-redis1
-        enabled                     : true
+        enabled                     : false
       - app                         : agg-management-agent
         alias                       : agg-management-agent1
-        enabled                     : true
+        enabled                     : false
       - app                         : agg-private-api
         enabled                     : false
       - app                         : agg-public-api

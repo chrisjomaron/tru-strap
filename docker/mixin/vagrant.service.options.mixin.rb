@@ -29,6 +29,14 @@ services.each do |service, params|
     end
     puts "TRUSTRAP_WITH_SKYDNS  #{TRUSTRAP_WITH_SKYDNS}"
 
+    skydns = params.detect {|param| param['ejbca']}
+    if skydns
+      TRUSTRAP_WITH_EJBCA = ejbca['ejbca']
+    else
+     TRUSTRAP_WITH_EJBCA = false
+    end
+    puts "TRUSTRAP_WITH_EBJCA  #{TRUSTRAP_WITH_EJBCA}"
+
   else
     abort("Service variable: #{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE} is not set in file #{YAML_OPTIONS}, exiting ...")
   end

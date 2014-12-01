@@ -59,6 +59,8 @@
 require 'yaml'
 
 SKYDNS_NAME = "go-skydns"
+EJBCA_NAME = "ejbca"
+
 YAML_OPTIONS = "../../services.yaml"
 VAGRANTFILE_API_VERSION = "2"
 
@@ -104,6 +106,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if TRUSTRAP_WITH_SKYDNS
     eval(IO.read("../../../mixin/vagrant.service.skydns.mixin.rb"), binding)
   end # if TRUSTRAP_WITH_SKYDNS
+
+  if TRUSTRAP_WITH_EJBCA
+    eval(IO.read("../../../mixin/vagrant.service.ejbca.mixin.rb"), binding)
+  end # if TRUSTRAP_WITH_EJBCA
 
   # -------------------------------------------
   # Provision Business Serivices

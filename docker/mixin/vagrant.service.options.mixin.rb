@@ -29,8 +29,8 @@ services.each do |service, params|
     end
     puts "TRUSTRAP_WITH_SKYDNS  #{TRUSTRAP_WITH_SKYDNS}"
 
-    skydns = params.detect {|param| param['ejbca']}
-    if skydns
+    ejbca = params.detect {|param| param['ejbca']}
+    if ejbca
       TRUSTRAP_WITH_EJBCA = ejbca['ejbca']
     else
      TRUSTRAP_WITH_EJBCA = false

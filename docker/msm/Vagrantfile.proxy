@@ -18,8 +18,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "dockerhost"
   config.vm.box = "centos65-x86_64-20140116"
 
-  # Shipyard service
+  # dev services
   config.vm.network "forwarded_port", guest: 8080, host: 8080
+  config.vm.network "forwarded_port", guest: 9990, host: 9990
  
   # Network services
   config.vm.network "forwarded_port", guest: 4001, host: 4001
@@ -31,6 +32,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 27018, host: 27018
   config.vm.network "forwarded_port", guest: 27019, host: 27019
   config.vm.network "forwarded_port", guest: 28017, host: 28017
+
+  # mysql services
+  config.vm.network "forwarded_port", guest: 3306, host: 3306
 
   # Redis services
   config.vm.network "forwarded_port", guest: 6379, host: 6379

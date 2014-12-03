@@ -96,7 +96,7 @@ eval(IO.read("../../../mixin/vagrant.service.options.mixin.rb"), binding)
 # -----------------------------------------------------------------------------
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.ssh.username = "dev-opts"
+  config.ssh.username = "dev-ops"
   config.ssh.pty = true
   config.ssh.forward_agent = true
 

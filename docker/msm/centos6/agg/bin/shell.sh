@@ -31,7 +31,7 @@ cat <<EOF
     -h| --help             this usage text.
     -v| --version          the version.
     -n| --name             the skydns name.
-    -m| --mode             the processing mode (hosts, resolv, start, config).
+    -m| --mode             the processing mode (hosts, resolv, start, config, ejbca).
     -d| --domain           the dns domain name (msm.internal, tsm.internal).
     
 EOF
@@ -97,6 +97,26 @@ function update_config {
   fi
 }
 
+function update_ejbca_mysql {
+  RESULT=`pgrep java`
+  if [ "${RESULT:-null}" = null ]; then
+    printf ", skipped config"
+  else
+    sleep 5
+    runuser -l jboss -c '/opt/jboss-as-7.1.1.Final/bin/jboss-cli.sh --connect --user=admin --password=password123 --command="/subsystem=datasources/jdbc-driver=com.mysql.jdbc.Driver:add(driver-name=com.mysql.jdbc.Driver,driver-class-name=com.mysql.jdbc.Driver,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.jdbc.jdbc.jdbc2.optional.MysqlXADataSource)"'
+  fi
+}
+
+function update_ejbca_deploy {
+  RESULT=`pgrep java`
+  if [ "${RESULT:-null}" = null ]; then
+    printf ", skipped config"
+  else
+    echo "Configuring ejbca mysql service from ant deploy"
+    runuser -l jboss -c 'cd /opt/ejbca_ce_6_2_0 && /opt/apache-ant-1.9.4/bin/ant deploy'
+  fi
+}
+
 # -------------------------------------------
 # Process Command Line Params
 # -------------------------------------------
@@ -142,7 +162,7 @@ if [[ ${SKYDNS_NAME} == "" || ${SHELL_MODE} == "" || ${DOMAIN_NAME} == "" ]]; th
   exit 1
 fi
 
-MODES="hosts resolv start config"
+MODES="hosts resolv start config ejbca"
 if echo "$MODES" | grep -q "$SHELL_MODE"; then
   echo "Mode is ${SHELL_MODE}"
 else
@@ -173,6 +193,10 @@ case "${SHELL_MODE}" in
     ;;
   config)
     update_config
+    ;;
+  ejbca)
+    update_ejbca_mysql
+    update_ejbca_deploy
     ;;
 esac
 

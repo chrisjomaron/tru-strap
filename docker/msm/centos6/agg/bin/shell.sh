@@ -97,23 +97,15 @@ function update_config {
   fi
 }
 
-function update_ejbca_mysql {
-  RESULT=`pgrep java`
-  if [ "${RESULT:-null}" = null ]; then
-    printf ", skipped config"
-  else
-    sleep 5
-    runuser -l jboss -c '/opt/jboss-as-7.1.1.Final/bin/jboss-cli.sh --connect --user=admin --password=password123 --command="/subsystem=datasources/jdbc-driver=com.mysql.jdbc.Driver:add(driver-name=com.mysql.jdbc.Driver,driver-class-name=com.mysql.jdbc.Driver,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.jdbc.jdbc.jdbc2.optional.MysqlXADataSource)"'
-  fi
-}
-
 function update_ejbca_deploy {
   RESULT=`pgrep java`
   if [ "${RESULT:-null}" = null ]; then
     printf ", skipped config"
   else
     echo "Configuring ejbca mysql service from ant deploy"
-    runuser -l jboss -c 'cd /opt/ejbca_ce_6_2_0 && /opt/apache-ant-1.9.4/bin/ant deploy'
+    echo "This deployment is running in background, check the JBoss console for progress..."
+    runuser -l jboss -c 'cd /opt/ejbca_ce_6_2_0 && /opt/apache-ant-1.9.4/bin/ant deploy &'
+    exit
   fi
 }
 
@@ -195,7 +187,6 @@ case "${SHELL_MODE}" in
     update_config
     ;;
   ejbca)
-    update_ejbca_mysql
     update_ejbca_deploy
     ;;
 esac

@@ -35,7 +35,7 @@ services.each do |service, params|
     else
      TRUSTRAP_WITH_EJBCA = false
     end
-    puts "TRUSTRAP_WITH_EBJCA  #{TRUSTRAP_WITH_EJBCA}"
+    puts "TRUSTRAP_WITH_EBJCA   #{TRUSTRAP_WITH_EJBCA}"
 
   else
     abort("Service variable: #{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE} is not set in file #{YAML_OPTIONS}, exiting ...")

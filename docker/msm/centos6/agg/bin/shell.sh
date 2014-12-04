@@ -17,8 +17,10 @@
 
 
 NOW=$(date "+%Y_%m_%d_%H")
-VERSION=0.1.0
+VERSION=0.2.0
 SCRIPTNAME=`basename $0`
+
+JBOSS_CLI="/opt/jboss-as-7.1.1.Final/bin/jboss-cli.sh --connect --user=admin --password=password01"
 
 # -------------------------------------------
 # Functions
@@ -97,15 +99,38 @@ function update_config {
   fi
 }
 
+function update_ejbca_mysql {
+  RESULT=`pgrep mysqld`
+  if [ "${RESULT:-null}" = null ]; then
+    printf ", skipped config"
+  else
+    echo "Configuring ejbca mysql user data"
+    sleep 2
+    runuser -l jboss -c '/usr/bin/mysql -u root < /tmp/mysql-user'
+    echo "Registering mysql driver with JBoss"
+    runuser -l jboss -c "${JBOSS_CLI} --command=\"/subsystem=datasources/jdbc-driver=com.mysql.jdbc.Driver:add(driver-name=com.mysql.jdbc.Driver,driver-class-name=com.mysql.jdbc.Driver,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.jdbc.jdbc.jdbc2.optional.MysqlXADataSource)\""
+  fi
+}
+
 function update_ejbca_deploy {
   RESULT=`pgrep java`
   if [ "${RESULT:-null}" = null ]; then
     printf ", skipped config"
   else
     echo "Configuring ejbca mysql service from ant deploy"
-    echo "This deployment is running in background, check the JBoss console for progress..."
-    runuser -l jboss -c 'cd /opt/ejbca_ce_6_2_0 && /opt/apache-ant-1.9.4/bin/ant deploy &'
-    exit
+    echo "Running in background (approx 1 min), check /tmp/ant-deploy.log ..."
+    runuser -l jboss -c 'cd /opt/ejbca_ce_6_2_0 && /opt/apache-ant-1.9.4/bin/ant deploy >> /tmp/ant-deploy.log  2>&1 & '
+  fi
+}
+
+function update_ejbca_install {
+  RESULT=`pgrep java`
+  if [ "${RESULT:-null}" = null ]; then
+    printf ", skipped config"
+  else
+    echo "Configuring ejbca mysql service from ant install"
+    echo "Running in background (approx 2 mins), check /tmp/ant-install.log ..."
+    runuser -l jboss -c 'cd /opt/ejbca_ce_6_2_0 && /opt/apache-ant-1.9.4/bin/ant install >> /tmp/ant-install.log  2>&1 & '
   fi
 }
 
@@ -187,7 +212,15 @@ case "${SHELL_MODE}" in
     update_config
     ;;
   ejbca)
-    update_ejbca_deploy
+     update_ejbca_mysql
+     update_ejbca_deploy
+     regex='BUILD SUCCESSFUL'
+     tail /tmp/ant-deploy.log -n0 -F | while read line; do
+       if [[ $line =~ $regex ]]; then
+         pkill -9 -P $$ tail
+       fi
+     done
+     update_ejbca_install
     ;;
 esac
 

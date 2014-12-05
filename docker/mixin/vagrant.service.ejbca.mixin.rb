@@ -24,7 +24,7 @@ config.vm.define "#{EJBCA_NAME}" do |m|
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
   end
-  m.vm.provision "shell", inline: "echo ant deploy(approx 1 min), wait to complete then ant install(approx 2mins)"
+  m.vm.provision "shell", inline: "echo \"ant deploy(approx 1 min), wait to complete then ant install(approx 2mins)\""
   m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m ejbca -d #{TRUSTRAP_DOMAIN}"
   if TRUSTRAP_WITH_SKYDNS
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"

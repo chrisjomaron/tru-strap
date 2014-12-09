@@ -96,9 +96,12 @@ docker search pauldavidgilligan
 docker pull pauldavidgilligan/docker-centos6-base-image
 ```
 ### OS User ID
-* dev-ops ID 500
-* jboss   ID 600
-* haproxy ID 610
+
+| Account       | ID            |
+| ------------- |:-------------:|
+| dev-ops       | 500 |
+| jboss         | 600 |
+| haproxy       | 610 |
 
 ### Issues
 * https://github.com/docker/docker/issues/5135

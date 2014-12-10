@@ -214,13 +214,17 @@ case "${SHELL_MODE}" in
   ejbca)
      update_ejbca_mysql
      update_ejbca_deploy
-     regex='BUILD SUCCESSFUL'
+     regex_on='BUILD SUCCESSFUL'
+     regex_off='BUILD FAILED'
      tail /tmp/ant-deploy.log -n0 -F | while read line; do
-       if [[ $line =~ $regex ]]; then
+       if [[ $line =~ $regex_on ]]; then
          pkill -9 -P $$ tail
+         update_ejbca_install
+       elif [[ $line =~ $regex_off ]]; then
+         pkill -9 -P $$ tail
+         echo "Failed aborting, ${regex_off}"
        fi
      done
-     update_ejbca_install
     ;;
 esac
 

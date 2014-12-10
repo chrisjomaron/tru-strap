@@ -1,8 +1,11 @@
 services:
   hvd-agg:
     - domain: msm.internal
-    - skydns: false
-    - ejbca: true
+    - fe-domain: fe.msm.internal
+    - be-domain: be.msm.internal
+    - skydns: true
+    - ejbca: false
+    - tango: true
     - git:
       - reponame   : msm-provisioning
       - repouser   : pauldavidgilligan-msm

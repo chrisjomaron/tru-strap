@@ -1,0 +1,7 @@
+---
+:backends:
+  - yaml
+:yaml:
+  :datadir: /home/dev-ops/etc/hieradata
+:hierarchy:
+  - "node/%{::fqdn}"

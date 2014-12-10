@@ -1,0 +1,7 @@
+---
+classes:
+  - role::skydns
+profile::skydns::entries:
+  ejbca.msm.internal:
+    host: 'etcd.msm.internal'
+    port: '4000'

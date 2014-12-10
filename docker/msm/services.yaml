@@ -4,7 +4,7 @@ services:
     - fe-domain: fe.msm.internal
     - be-domain: be.msm.internal
     - skydns: true
-    - ejbca: true
+    - ejbca: false
     - tango: true
     - git:
       - reponame   : msm-provisioning

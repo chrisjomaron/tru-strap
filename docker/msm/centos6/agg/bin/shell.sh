@@ -109,6 +109,7 @@ function update_ejbca_mysql {
     runuser -l jboss -c '/usr/bin/mysql -u root < /tmp/mysql-user'
     echo "Registering mysql driver with JBoss"
     runuser -l jboss -c "${JBOSS_CLI} --command=\"/subsystem=datasources/jdbc-driver=com.mysql.jdbc.Driver:add(driver-name=com.mysql.jdbc.Driver,driver-class-name=com.mysql.jdbc.Driver,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.jdbc.jdbc.jdbc2.optional.MysqlXADataSource)\""
+    sleep 2
   fi
 }
 

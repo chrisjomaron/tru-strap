@@ -10,12 +10,13 @@
 # -----------------------------------------------------------------------------
 # Provision SkyDNS via ETCD
 # -----------------------------------------------------------------------------
-config.vm.define "#{SKYDNS_NAME}" do |m|
+SKYDNS_FQDN = "#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}"
+config.vm.define "#{SKYDNS_FQDN}" do |m|
   m.vm.provider "docker" do |vm|
-    vm.name            = "#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}"
+    vm.name            = "#{SKYDNS_FQDN}"
     vm.image           = "pauldavidgilligan/go-skydns"
     vm.has_ssh         = true
-    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{SKYDNS_NAME}"]
+    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{SKYDNS_FQDN}"]
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
   end

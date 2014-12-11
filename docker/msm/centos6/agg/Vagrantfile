@@ -59,8 +59,9 @@
 require 'yaml'
 
 SKYDNS_NAME = "go-skydns"
-EJBCA_NAME = "ejbca"
-TANGO_NAME = "gw"
+ETCD_NAME   = "etcd"
+EJBCA_NAME  = "ejbca"
+TANGO_NAME  = "gw"
 
 YAML_OPTIONS = "../../services.yaml"
 VAGRANTFILE_API_VERSION = "2"

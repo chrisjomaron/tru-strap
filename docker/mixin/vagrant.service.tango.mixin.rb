@@ -25,8 +25,9 @@ config.vm.define "#{TANGO_FE_FQDN}" do |m|
     end
   end
   if TRUSTRAP_WITH_SKYDNS
-    m.vm.provision "file", source: "puppet", destination: "etc/"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision "file", source: "puppet", destination: "etc/"
   end
 end
 
@@ -43,8 +44,9 @@ config.vm.define "#{TANGO_BE_FQDN}" do |m|
     end
   end
   if TRUSTRAP_WITH_SKYDNS
-    m.vm.provision "file", source: "puppet", destination: "etc/"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision "file", source: "puppet", destination: "etc/"
   end
 end
 

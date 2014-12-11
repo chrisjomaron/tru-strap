@@ -29,7 +29,7 @@ config.vm.define "#{TANGO_FE_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
     m.vm.provision :shell, inline: "mkdir -p /root/.ssh && touch /root/.ssh/known_hosts && ssh-keyscan -H github.com >> /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts"
-    m.vm.provision :shell, inline: "cd /home/dev-ops/etc/puppet && librarian-puppet install --verbose --path modules-contrib"
+    m.vm.provision :shell, inline: "cd /home/dev-ops/etc/puppet && librarian-puppet install --path modules-contrib"
     m.vm.provision :shell, inline: "puppet apply --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e \"include role::skydns_client\""
   end
 end
@@ -51,7 +51,7 @@ config.vm.define "#{TANGO_BE_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
     m.vm.provision :shell, inline: "mkdir -p /root/.ssh && touch /root/.ssh/known_hosts && ssh-keyscan -H github.com >> /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts"
-    m.vm.provision :shell, inline: "cd /home/dev-ops/etc/puppet && librarian-puppet install --verbose --path modules-contrib"
+    m.vm.provision :shell, inline: "cd /home/dev-ops/etc/puppet && librarian-puppet install --path modules-contrib"
     m.vm.provision :shell, inline: "puppet apply --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e \"include role::skydns_client\""
   end
 end

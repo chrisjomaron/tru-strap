@@ -2,6 +2,6 @@
 :backends:
   - yaml
 :yaml:
-  :datadir: /home/dev-ops/etc/hieradata
+  :datadir: /home/dev-ops/etc/puppet/hieradata
 :hierarchy:
   - "node/%{::fqdn}"

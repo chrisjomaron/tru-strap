@@ -1,5 +1,17 @@
-forge "http://forge.puppetlabs.com"
+forge "https://forgeapi.puppetlabs.com"
 
-mod "pauldavidgilligan-msm/puppet-skydns-client",
-  :git => "git@github.com:pauldavidgilligan-msm/puppet-skydns-client.git",
+# Base modules
+mod "saz/timezone", "3.0.1"
+mod "saz/rsyslog", "3.1.0"
+mod "thias/postfix", "0.3.2"
+mod "thias/sysctl", "0.3.2"
+mod "spiette/selinux", "0.5.4"
+mod "stahnma/epel", "1.0.0"
+mod "puppetlabs/stdlib", "4.3.2"
+mod "maestrodev/wget", "1.5.6"
+mod "erwbgy/limits", "0.3.1"
+
+mod "MSMFG/puppet-skydns-client",
+  :git => "git@github.com:MSMFG/puppet-skydns-client.git",
   :ref => "0.0.3"
+

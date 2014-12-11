@@ -1,7 +1,5 @@
 ---
-classes:
-  - role::skydns
-profile::skydns::entries:
+profile::skydns_client::entries:
   gw.be.msm.internal:
     host: 'etcd.msm.internal'
     port: '4000'

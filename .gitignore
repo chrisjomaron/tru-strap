@@ -2,3 +2,5 @@
 *.box
 *.pem
 .DS_Store
+
+superadmin.p12

@@ -21,6 +21,7 @@ VERSION=0.2.0
 SCRIPTNAME=`basename $0`
 
 JBOSS_CLI="/opt/jboss-as-7.1.1.Final/bin/jboss-cli.sh --connect --user=admin --password=password01"
+EJBCA_CLI="/opt/ejbca_ce_6_2_0/bin/ejbca.sh"
 
 # -------------------------------------------
 # Functions
@@ -99,17 +100,23 @@ function update_config {
   fi
 }
 
+function update_puppet {
+  mkdir -p /root/.ssh && touch /root/.ssh/known_hosts && ssh-keyscan -H github.com >> /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts
+  cd /home/dev-ops/etc/puppet && librarian-puppet install --path modules-contrib
+  puppet apply --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e "include role::skydns_client"
+}
+
 function update_ejbca_mysql {
   RESULT=`pgrep mysqld`
   if [ "${RESULT:-null}" = null ]; then
     printf ", skipped config"
   else
     echo "Configuring ejbca mysql user data"
-    sleep 10 # TODO: Jboss wait loop
     runuser -l jboss -c '/usr/bin/mysql -u root < /tmp/mysql-user'
+    sleep 10 
     echo "Registering mysql driver with JBoss"
     runuser -l jboss -c "${JBOSS_CLI} --command=\"/subsystem=datasources/jdbc-driver=com.mysql.jdbc.Driver:add(driver-name=com.mysql.jdbc.Driver,driver-class-name=com.mysql.jdbc.Driver,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.jdbc.jdbc.jdbc2.optional.MysqlXADataSource)\""
-    sleep 2
+    sleep 10 # TODO: Jboss wait loop
   fi
 }
 
@@ -130,9 +137,24 @@ function update_ejbca_install {
     printf ", skipped config"
   else
     echo "Configuring ejbca mysql service from ant install"
-    echo "Running in background (approx 2 mins), check /tmp/ant-install.log ..."
-    runuser -l jboss -c 'cd /opt/ejbca_ce_6_2_0 && /opt/apache-ant-1.9.4/bin/ant install >> /tmp/ant-install.log  2>&1 & '
+    echo "Running (approx 2 mins), check /tmp/ant-install.log ..."
+    runuser -l jboss -c 'cd /opt/ejbca_ce_6_2_0 && /opt/apache-ant-1.9.4/bin/ant install >> /tmp/ant-install.log  2>&1 '
+    runuser -l jboss -c 'cp /opt/ejbca_ce_6_2_0/p12/superadmin.p12 /vagrant/'
+    echo "Superadmin keystore has been copied to your Vagrant directory, don't forget to import into Firefox!"
+    echo "Add entry to /etc/hosts 127.0.0.1 ejbca.msm.internal"
+    echo "Then from Firefox, you can access https://ejbca.msm.internal:8443/ejbca/"
   fi
+}
+
+function update_ejbca_restart {
+  /usr/bin/supervisorctl restart jboss
+}
+
+function update_ejbca_scep {
+  echo "scep.operationmode = ca"    > /tmp/scepalias-camode.properties
+  echo "uploaded.includeca = true" >> /tmp/scepalias-camode.properties
+  runuser -l jboss -c "${EJBCA_CLI} scep uploadfile --alias scep --file /tmp/scepalias-camode.properties" 
+  runuser -l jboss -c "${EJBCA_CLI} ra addendentity --username=routerMSM --password=foo123 --dn="CN=Device" --caname=MSMCA --type=1 --token=USERGENERATED"
 }
 
 # -------------------------------------------
@@ -214,6 +236,7 @@ case "${SHELL_MODE}" in
     ;;
   ejbca)
      update_ejbca_mysql
+     update_puppet  # do this here, give jboss some time to catchup
      update_ejbca_deploy
      regex_on='BUILD SUCCESSFUL'
      regex_off='BUILD FAILED'
@@ -221,6 +244,8 @@ case "${SHELL_MODE}" in
        if [[ $line =~ $regex_on ]]; then
          pkill -9 -P $$ tail
          update_ejbca_install
+         update_ejbca_scep
+         update_ejbca_restart
        elif [[ $line =~ $regex_off ]]; then
          pkill -9 -P $$ tail
          echo "Failed aborting, ${regex_off}"

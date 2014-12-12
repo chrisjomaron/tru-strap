@@ -18,34 +18,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "dockerhost"
   config.vm.box = "centos65-x86_64-20140116"
 
-  # dev services
-  config.vm.network "forwarded_port", guest: 8080, host: 8080
-  config.vm.network "forwarded_port", guest: 9990, host: 9990
- 
-  # Network services
-  config.vm.network "forwarded_port", guest: 4001, host: 4001
-  config.vm.network "forwarded_port", guest: 5000, host: 5000
-  config.vm.network "forwarded_port", guest: 8125, host: 8125
-
-  # Mongodb services
-  config.vm.network "forwarded_port", guest: 27017, host: 27017
-  config.vm.network "forwarded_port", guest: 27018, host: 27018
-  config.vm.network "forwarded_port", guest: 27019, host: 27019
-  config.vm.network "forwarded_port", guest: 28017, host: 28017
-
-  # mysql services
-  config.vm.network "forwarded_port", guest: 3306, host: 3306
-
-  # Redis services
-  config.vm.network "forwarded_port", guest: 6379, host: 6379
-  config.vm.network "forwarded_port", guest: 6380, host: 6380
-
-  # Agg ports
-  config.vm.network "forwarded_port", guest: 8070, host: 8070
-  config.vm.network "forwarded_port", guest: 8080, host: 8080
-  config.vm.network "forwarded_port", guest: 8090, host: 8090
-
- 
   config.vm.provider :virtualbox do |vb|
 
       # this is a dockerhost

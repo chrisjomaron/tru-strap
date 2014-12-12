@@ -11,8 +11,13 @@
 # Provision EJBCA
 # -----------------------------------------------------------------------------
 EJBCA_FQDN = "#{EJBCA_NAME}.#{TRUSTRAP_DOMAIN}"
-# config.vm.network "forwarded_port", guest: 9999, host: 9999
 config.vm.define "#{EJBCA_FQDN}" do |m|
+  # JBoss Console ports
+  m.vm.network "forwarded_port", guest: 9990, host: 9990
+  # EJBCA Service ports
+  m.vm.network "forwarded_port", guest: 8080, host: 8080
+  m.vm.network "forwarded_port", guest: 8443, host: 8443
+  # Docker provider
   m.vm.provider "docker" do |vm|
     vm.name            = "#{EJBCA_FQDN}"
     vm.image           = "pauldavidgilligan/docker-centos6-ejbca-mysql"
@@ -28,11 +33,8 @@ config.vm.define "#{EJBCA_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
-    m.vm.provision :shell, inline: "mkdir -p /root/.ssh && touch /root/.ssh/known_hosts && ssh-keyscan -H github.com >> /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts"
-    m.vm.provision :shell, inline: "cd /home/dev-ops/etc/puppet && librarian-puppet install --path modules-contrib"
-    m.vm.provision :shell, inline: "puppet apply --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e \"include role::skydns_client\""
   end
-  m.vm.provision :shell, inline: "echo \"ant deploy(approx 1 min), wait to complete then ant install(approx 2mins)\""
+  m.vm.provision :shell, inline: "echo \"after skydns registration, ant deploy(approx 1 min), wait to complete then ant install(approx 2mins)\""
   m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{EJBCA_NAME} -m ejbca -d #{TRUSTRAP_DOMAIN}"
 end
 

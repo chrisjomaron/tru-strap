@@ -139,7 +139,7 @@ function update_ejbca_install {
     echo "Configuring ejbca mysql service from ant install"
     echo "Running (approx 2 mins), check /tmp/ant-install.log ..."
     runuser -l jboss -c 'cd /opt/ejbca_ce_6_2_0 && /opt/apache-ant-1.9.4/bin/ant install >> /tmp/ant-install.log  2>&1 '
-    runuser -l jboss -c 'cp -f /opt/ejbca_ce_6_2_0/p12/superadmin.p12 /vagrant/'
+    cp -f /opt/ejbca_ce_6_2_0/p12/superadmin.p12 /vagrant/
     echo "Superadmin keystore has been copied to your Vagrant directory, don't forget to import into Firefox!"
     echo "Add entry to /etc/hosts 127.0.0.1 ejbca.msm.internal"
     echo "Then from Firefox, you can access https://ejbca.msm.internal:8443/ejbca/"

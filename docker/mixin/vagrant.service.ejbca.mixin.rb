@@ -36,5 +36,6 @@ config.vm.define "#{EJBCA_FQDN}" do |m|
   end
   m.vm.provision :shell, inline: "echo \"after skydns registration, ant deploy(approx 1 min), wait to complete then ant install(approx 2mins)\""
   m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{EJBCA_NAME} -m ejbca -d #{TRUSTRAP_DOMAIN}"
+  m.vm.provision :shell, inline: "echo Node #{EJBCA_NAME} is very handsome!"
 end
 

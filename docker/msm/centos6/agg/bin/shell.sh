@@ -34,7 +34,7 @@ cat <<EOF
     -h| --help             this usage text.
     -v| --version          the version.
     -n| --name             the skydns name.
-    -m| --mode             the processing mode (hosts, resolv, start, config, ejbca).
+    -m| --mode             the processing mode (hosts, resolv, start, config, ejbca, skydns_client).
     -d| --domain           the dns domain name (msm.internal, tsm.internal).
     
 EOF
@@ -103,6 +103,9 @@ function update_config {
 function update_puppet {
   mkdir -p /root/.ssh && touch /root/.ssh/known_hosts && ssh-keyscan -H github.com >> /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts
   cd /home/dev-ops/etc/puppet && librarian-puppet install --path modules-contrib
+}
+
+function update_skydns_client {
   puppet apply --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e "include role::skydns_client"
 }
 
@@ -154,7 +157,7 @@ function update_ejbca_scep {
   echo "scep.operationmode = ca"    > /tmp/scepalias-camode.properties
   echo "uploaded.includeca = true" >> /tmp/scepalias-camode.properties
   runuser -l jboss -c "${EJBCA_CLI} config scep uploadfile --alias scep --file /tmp/scepalias-camode.properties" 
-  runuser -l jboss -c "${EJBCA_CLI} ra addendentity --username=routerMSM --password=foo123 --dn="CN=Device" --caname=MSMCA --type=1 --token=USERGENERATED"
+#  runuser -l jboss -c "${EJBCA_CLI} ra addendentity --username=routerMSM --password=foo123 --dn="CN=Device" --caname=MSMCA --type=1 --token=USERGENERATED"
 }
 
 # -------------------------------------------
@@ -202,7 +205,7 @@ if [[ ${SKYDNS_NAME} == "" || ${SHELL_MODE} == "" || ${DOMAIN_NAME} == "" ]]; th
   exit 1
 fi
 
-MODES="hosts resolv start config ejbca"
+MODES="hosts resolv start config ejbca skydns_client"
 if echo "$MODES" | grep -q "$SHELL_MODE"; then
   echo "Mode is ${SHELL_MODE}"
 else
@@ -234,9 +237,11 @@ case "${SHELL_MODE}" in
   config)
     update_config
     ;;
+
   ejbca)
      update_ejbca_mysql
      update_puppet  # do this here, give jboss some time to catchup
+     update_skydns_client # and this
      update_ejbca_deploy
      regex_on='BUILD SUCCESSFUL'
      regex_off='BUILD FAILED'
@@ -252,6 +257,12 @@ case "${SHELL_MODE}" in
        fi
      done
     ;;
+
+  skydns_client)
+    update_puppet
+    update_skydns_client
+    ;;
+
 esac
 
 

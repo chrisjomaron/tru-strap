@@ -21,7 +21,9 @@ VERSION=0.2.0
 SCRIPTNAME=`basename $0`
 
 JBOSS_CLI="/opt/jboss-as-7.1.1.Final/bin/jboss-cli.sh --connect --user=admin --password=password01"
+
 EJBCA_CLI="/opt/ejbca_ce_6_2_0/bin/ejbca.sh"
+EJBCA_CHECKPOINT_FILE=/tmp/mysql-user-checkpoint
 
 # -------------------------------------------
 # Functions
@@ -116,6 +118,7 @@ function update_ejbca_mysql {
   else
     echo "Configuring ejbca mysql user data"
     runuser -l jboss -c '/usr/bin/mysql -u root < /tmp/mysql-user'
+    echo "checkpoint: mysql user created" > ${EJBCA_CHECKPOINT_FILE}
     sleep 10 
     echo "Registering mysql driver with JBoss"
     runuser -l jboss -c "${JBOSS_CLI} --command=\"/subsystem=datasources/jdbc-driver=com.mysql.jdbc.Driver:add(driver-name=com.mysql.jdbc.Driver,driver-class-name=com.mysql.jdbc.Driver,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.jdbc.jdbc.jdbc2.optional.MysqlXADataSource)\""

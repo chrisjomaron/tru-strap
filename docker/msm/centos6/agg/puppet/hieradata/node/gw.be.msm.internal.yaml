@@ -1,5 +1,8 @@
 ---
 profile::skydns_client::entries:
   gw.be.msm.internal:
-    host: 'etcd.msm.internal'
-    port: '4000'
+    host: "%{::ipaddress}"
+    port: 9443
+    ttl: 360
+    ttl_refresh: true
+    weight: 100

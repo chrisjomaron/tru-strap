@@ -5,3 +5,4 @@
   :datadir: /home/dev-ops/etc/puppet/hieradata
 :hierarchy:
   - "node/%{::fqdn}"
+  - common

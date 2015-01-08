@@ -1,5 +1,10 @@
 ---
+classes:
+  - role::docker_client
 profile::skydns_client::entries:
   gw.fe.msm.internal:
-    host: 'etcd.msm.internal'
-    port: '4000'
+    host: "%{::ipaddress}"
+    port: 443
+    ttl: 360
+    ttl_refresh: true
+    weight: 100

@@ -108,7 +108,7 @@ function update_puppet {
 }
 
 function update_skydns_client {
-  puppet apply --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e "include role::skydns_client"
+  puppet apply --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e "include role::docker_client"
 }
 
 function update_ejbca_mysql {

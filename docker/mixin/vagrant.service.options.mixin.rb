@@ -26,7 +26,7 @@ services.each do |service, params|
     fe_domain = params.detect {|param| param['fe-domain']}
     TRUSTRAP_FE_DOMAIN = fe_domain['fe-domain']
     if TRUSTRAP_FE_DOMAIN
-      puts "TRUSTRAP_FE_DOMAIN       #{TRUSTRAP_FE_DOMAIN}"
+      puts "TRUSTRAP_FE_DOMAIN    #{TRUSTRAP_FE_DOMAIN}"
     else
       abort("Domain variable: 'fe-domain' is not set in file #{YAML_OPTIONS}, exiting ...")
     end
@@ -34,7 +34,7 @@ services.each do |service, params|
     be_domain = params.detect {|param| param['be-domain']}
     TRUSTRAP_BE_DOMAIN = be_domain['be-domain']
     if TRUSTRAP_BE_DOMAIN
-      puts "TRUSTRAP_BE_DOMAIN       #{TRUSTRAP_BE_DOMAIN}"
+      puts "TRUSTRAP_BE_DOMAIN    #{TRUSTRAP_BE_DOMAIN}"
     else
       abort("Domain variable: 'be-domain' is not set in file #{YAML_OPTIONS}, exiting ...")
     end

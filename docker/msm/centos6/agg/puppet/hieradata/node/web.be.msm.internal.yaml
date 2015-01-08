@@ -1,8 +1,7 @@
 ---
 profile::skydns_client::entries:
-  ejbca.msm.internal:
+  web.be.msm.internal:
     host: "%{::ipaddress}"
-    port: 8080
     ttl: 360
     ttl_refresh: true
     weight: 100

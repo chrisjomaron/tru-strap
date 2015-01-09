@@ -10,7 +10,7 @@ mod "stahnma/epel", "1.0.0"
 mod "puppetlabs/stdlib", "4.3.2"
 mod "maestrodev/wget", "1.5.6"
 mod "erwbgy/limits", "0.3.1"
-
+mod "puppetlabs/vcsrepo", "1.2.0"
 
 # internal MSMFG
 mod "MSMFG/skydns_client",

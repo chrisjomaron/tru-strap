@@ -106,7 +106,7 @@ function update_puppet {
   # We need to simulate trustrap here, these values will be changed if the actual init.sh is ran.
   mkdir -m 0600 -p /etc/facter/facts.d
   echo "msmid_account=msm"                        >  /etc/facter/facts.d/init_custom_values.txt
-  echo "msmid_env=hvd"                           >> /etc/facter/facts.d/init_custom_values.txt
+  echo "msmid_env=hvd"                           >>  /etc/facter/facts.d/init_custom_values.txt
  
   # now install custom puppet modules
   mkdir -p /root/.ssh && touch /root/.ssh/known_hosts && ssh-keyscan -H github.com >> /root/.ssh/known_hosts && chmod 600 /root/.ssh/known_hosts

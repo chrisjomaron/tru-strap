@@ -1,4 +1,12 @@
 class role::docker_client {
+
+  include wait_for
+
+  Wait_for {
+    polling_frequency => 10,
+    max_retries       => 15
+  }
+
   include ::profile::java
   include ::profile::maven
   include ::profile::skydns_client
@@ -11,7 +19,7 @@ class role::docker_client {
   $combined_algorithm    = "SHA256WithRSAEncryption"
   $key_size              = "4096"
   $cert_days             = "7"
-  $x509_cn               = "*.web.be.msm.internal"
+  $x509_cn               = $msmid_registered
   $x509_ou               = "OPS"
   $x509_o                = "Moneysupermarket.com Group PLC"
   $x509_l                = "Chester"
@@ -22,13 +30,17 @@ class role::docker_client {
 
   # java -jar /opt/ife-toolbelt/ife-spring-shell/target/ife-spring-shell-1.1.4.one-jar.jar
 
+  $cmd = "ife pki generate --CN $msmid_registered\nife scep ca\nife scep enroll --CN $msmid_registered\nexit\n"
+
   file { "/etc/pki/msm":
     ensure => "directory",
     owner  => "root",
     group  => "wheel",
     mode   => 777
-  }
-
+  } ->
+  file { "/tmp/enrol.cmd":
+    content => $cmd
+  } ->
   vcsrepo { "/opt/ife-toolbelt":
     ensure   => present,
     provider => git,
@@ -41,12 +53,20 @@ class role::docker_client {
     path    => "/usr/local/bin/:/usr/bin:/bin/",
     require => Class['Maven::Maven']
   } ->
+  wait_for { 'cat /etc/facter/facts.d/skydns_custom_values.txt':
+    regex   => '.*msmid_registered.*'
+  } ->
   file { "ife-toolbelt-cfg":
-    path    => '/etc/ife-toolbelt.cfg',
+    path    => "/etc/ife-toolbelt.cfg",
     ensure  => file,
-    content => template('role/ife-toolbelt/ife-toolbelt.cfg.erb')
+    content => template("role/ife-toolbelt/ife-toolbelt.cfg.erb"),
+  } ->
+  exec { "enrol_client":
+    command => "/usr/bin/java -jar  /opt/ife-toolbelt/ife-spring-shell/target/ife-spring-shell-1.1.4.one-jar.jar --cmdfile /tmp/enrol.cmd ",
+    path    => "/usr/local/bin/:/bin/"
   }
 
+  # local message fix
   if versioncmp($::puppetversion,'3.6.1') >= 0 {
 
     $allow_virtual_packages = hiera('allow_virtual_packages',false)

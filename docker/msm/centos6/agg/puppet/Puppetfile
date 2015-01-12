@@ -11,6 +11,7 @@ mod "puppetlabs/stdlib", "4.3.2"
 mod "maestrodev/wget", "1.5.6"
 mod "erwbgy/limits", "0.3.1"
 mod "puppetlabs/vcsrepo", "1.2.0"
+mod "basti1302/wait_for", "0.3.0"
 
 # internal MSMFG
 mod "pauldavidgilligan-msm/skydns_client",

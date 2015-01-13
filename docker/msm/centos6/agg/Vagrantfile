@@ -162,9 +162,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
               vm.vagrant_machine = "dockerhost"
               vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
-              if TRUSTRAP_WITH_SKYDNS
-                vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
-              end
             end
             m.vm.provision :shell, inline: "echo Node #{_tag} is very handsome!"
             m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
@@ -196,9 +193,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
               vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{_fqdn}"]
               vm.vagrant_machine = "dockerhost"
               vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
-              if TRUSTRAP_WITH_SKYDNS
-                vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
-              end
             end
             m.vm.provision :shell, inline: "echo Node #{_tag} is very handsome!"
             m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"

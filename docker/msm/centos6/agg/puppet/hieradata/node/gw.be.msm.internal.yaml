@@ -1,6 +1,4 @@
 ---
-classes:
-  - role::docker_client
 profile::skydns_client::entries:
   gw.be.msm.internal:
     host: "%{::ipaddress}"

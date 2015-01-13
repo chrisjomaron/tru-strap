@@ -13,7 +13,10 @@ mod "erwbgy/limits", "0.3.1"
 mod "puppetlabs/vcsrepo", "1.2.0"
 mod "basti1302/wait_for", "0.3.0"
 
-# internal MSMFG
+# internal
+mod "pauldavidgilligan-msm/puppet-ife-toolbelt",
+  :git => "git@github.com:pauldavidgilligan-msm/puppet-ife-toolbelt.git"
+
 mod "pauldavidgilligan-msm/skydns_client",
   :git => "git@github.com:pauldavidgilligan-msm/puppet-skydns-client.git"
 

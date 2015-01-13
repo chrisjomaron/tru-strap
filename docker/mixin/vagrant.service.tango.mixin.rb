@@ -61,12 +61,13 @@ config.vm.define "#{TANGO_BE_FQDN}" do |m|
 end
 
 #
-# Create 3 backend sample web apps
+# Create 3 backend sample web apps a, b and c.
+# The virtual DNS entries n1, n2, n3 do not match a, b and c.
 #
 
-WEB_1_FQDN="n1.web.#{TRUSTRAP_BE_DOMAIN}"
-WEB_2_FQDN="n2.web.#{TRUSTRAP_BE_DOMAIN}"
-WEB_3_FQDN="n3.web.#{TRUSTRAP_BE_DOMAIN}"
+WEB_1_FQDN="na.web.#{TRUSTRAP_BE_DOMAIN}"
+WEB_2_FQDN="nb.web.#{TRUSTRAP_BE_DOMAIN}"
+WEB_3_FQDN="nc.web.#{TRUSTRAP_BE_DOMAIN}"
 
 config.vm.define "#{WEB_1_FQDN}" do |m|
   m.vm.provider "docker" do |vm|
@@ -79,7 +80,6 @@ config.vm.define "#{WEB_1_FQDN}" do |m|
     if TRUSTRAP_WITH_SKYDNS
       vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
     end
-    vm.link("#{EJBCA_NAME}.#{TRUSTRAP_DOMAIN}:#{EJBCA_NAME}.#{TRUSTRAP_DOMAIN}")
   end
   if TRUSTRAP_WITH_SKYDNS
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
@@ -101,7 +101,6 @@ config.vm.define "#{WEB_2_FQDN}" do |m|
     if TRUSTRAP_WITH_SKYDNS
       vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
     end
-    vm.link("#{EJBCA_NAME}.#{TRUSTRAP_DOMAIN}:#{EJBCA_NAME}.#{TRUSTRAP_DOMAIN}")
   end
   if TRUSTRAP_WITH_SKYDNS
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
@@ -123,7 +122,6 @@ config.vm.define "#{WEB_3_FQDN}" do |m|
     if TRUSTRAP_WITH_SKYDNS
       vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
     end
-    vm.link("#{EJBCA_NAME}.#{TRUSTRAP_DOMAIN}:#{EJBCA_NAME}.#{TRUSTRAP_DOMAIN}")
   end
   if TRUSTRAP_WITH_SKYDNS
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"

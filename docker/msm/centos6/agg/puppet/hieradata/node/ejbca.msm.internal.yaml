@@ -1,4 +1,11 @@
 ---
+classes:
+  - role::ife_toolbelt_client
+profile::ife_toolbelt_client::entries:
+  ejbca.msm.internal:
+    x509_cn: "*.ejbca.msm.internal"
+    combined_password : "8ruNestu"
+    challenge_password : "sW6Qecra"
 profile::skydns_client::entries:
   ejbca.msm.internal:
     host: "%{::ipaddress}"

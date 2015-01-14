@@ -255,19 +255,20 @@ case "${SHELL_MODE}" in
      update_ejbca_mysql
      update_puppet  # do this here, give jboss some time to catchup
      update_skydns_client # and this
-#      update_ejbca_deploy
-#     regex_on='BUILD SUCCESSFUL'
-#     regex_off='BUILD FAILED'
-#     tail /tmp/ant-deploy.log -n0 -F | while read line; do
-#       if [[ $line =~ $regex_on ]]; then
-#         pkill -9 -P $$ tail
-#         update_ejbca_install
-#         update_ejbca_scep
-#         update_ejbca_restart
-#       elif [[ $line =~ $regex_off ]]; then
-#         pkill -9 -P $$ tail
-#         echo "Failed aborting, ${regex_off}"
-#       fi
+     update_ejbca_deploy
+     regex_on='BUILD SUCCESSFUL'
+     regex_off='BUILD FAILED'
+     tail /tmp/ant-deploy.log -n0 -F | while read line; do
+       if [[ $line =~ $regex_on ]]; then
+         pkill -9 -P $$ tail
+         update_ejbca_install
+         update_ejbca_scep
+         update_ejbca_restart
+       elif [[ $line =~ $regex_off ]]; then
+         pkill -9 -P $$ tail
+         echo "Failed aborting, ${regex_off}"
+       fi
+     done    
     ;;
 
   app_client)

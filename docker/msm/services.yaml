@@ -5,7 +5,7 @@ services:
     - be-domain: be.msm.internal
     - skydns: true
     - ejbca: true
-    - tango: false
+    - tango: true
     - git:
       - reponame   : msm-provisioning
       - repouser   : pauldavidgilligan-msm

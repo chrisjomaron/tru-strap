@@ -2,7 +2,7 @@ class profile::ife_toolbelt_client($entries){
   include ::toolbelt
 
   $defaults = {
-    version               => '1.1.6',
+    version               => '1.1.7',
     alias_ca              => 'root.msm.internal',
     path                  => '/etc/pki/msm',
     truststore_password   => 'changeit',

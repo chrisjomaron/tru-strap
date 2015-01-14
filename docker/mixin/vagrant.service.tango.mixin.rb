@@ -31,7 +31,7 @@ config.vm.define "#{TANGO_FE_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m skydns_client -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
   end
   m.vm.provision :shell, inline: "echo Node #{TANGO_FE_FQDN} is very handsome!"
 end
@@ -55,7 +55,7 @@ config.vm.define "#{TANGO_BE_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m skydns_client -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
   end
   m.vm.provision :shell, inline: "echo Node #{TANGO_BE_FQDN} is very handsome!"
 end
@@ -85,7 +85,7 @@ config.vm.define "#{WEB_1_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m skydns_client -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
   end
   m.vm.provision :shell, inline: "echo Node #{WEB_1_FQDN} is very handsome!"
 end
@@ -106,7 +106,7 @@ config.vm.define "#{WEB_2_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m skydns_client -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
   end
   m.vm.provision :shell, inline: "echo Node #{WEB_2_FQDN} is very handsome!"
 end
@@ -127,7 +127,7 @@ config.vm.define "#{WEB_3_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m skydns_client -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
   end
   m.vm.provision :shell, inline: "echo Node #{WEB_3_FQDN} is very handsome!"
 end

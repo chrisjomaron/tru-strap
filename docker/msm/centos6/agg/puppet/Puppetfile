@@ -17,8 +17,8 @@ mod "basti1302/wait_for", "0.3.0"
 mod "pauldavidgilligan-msm/puppet-ife-toolbelt",
   :git => "git@github.com:pauldavidgilligan-msm/puppet-ife-toolbelt.git"
 
-mod "pauldavidgilligan-msm/skydns_client",
-  :git => "git@github.com:pauldavidgilligan-msm/puppet-skydns-client.git"
+mod "MSMFG/skydns_client",
+  :git => "git@github.com:MSMFG/puppet-skydns-client.git"
 
 # external
 mod "puppetlabs/java", "1.2.0"

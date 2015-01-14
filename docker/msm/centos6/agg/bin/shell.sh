@@ -36,7 +36,7 @@ cat <<EOF
     -h| --help             this usage text.
     -v| --version          the version.
     -n| --name             the skydns name.
-    -m| --mode             the processing mode (hosts, resolv, start, config, ejbca, skydns_client).
+    -m| --mode             the processing mode (hosts, resolv, start, config, ejbca, app_client).
     -d| --domain           the dns domain name (msm.internal, tsm.internal).
     
 EOF
@@ -113,8 +113,12 @@ function update_puppet {
   cd /home/dev-ops/etc/puppet && librarian-puppet install --path modules-contrib
 }
 
-function update_docker_client {
-  puppet apply --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e "include role::docker_client"
+function update_skydns_client {
+  puppet apply --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e "include role::skydns_client"
+}
+
+function update_ife_toolbelt_client {
+  puppet apply --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e "include role::ife_toolbelt_client"
 }
 
 function update_ejbca_mysql {
@@ -214,7 +218,7 @@ if [[ ${SKYDNS_NAME} == "" || ${SHELL_MODE} == "" || ${DOMAIN_NAME} == "" ]]; th
   exit 1
 fi
 
-MODES="hosts resolv start config ejbca skydns_client"
+MODES="hosts resolv start config ejbca app_client"
 if echo "$MODES" | grep -q "$SHELL_MODE"; then
   echo "Mode is ${SHELL_MODE}"
 else
@@ -250,26 +254,25 @@ case "${SHELL_MODE}" in
   ejbca)
      update_ejbca_mysql
      update_puppet  # do this here, give jboss some time to catchup
-     update_docker_client # and this
-     update_ejbca_deploy
-     regex_on='BUILD SUCCESSFUL'
-     regex_off='BUILD FAILED'
-     tail /tmp/ant-deploy.log -n0 -F | while read line; do
-       if [[ $line =~ $regex_on ]]; then
-         pkill -9 -P $$ tail
-         update_ejbca_install
-         update_ejbca_scep
-         update_ejbca_restart
-       elif [[ $line =~ $regex_off ]]; then
-         pkill -9 -P $$ tail
-         echo "Failed aborting, ${regex_off}"
-       fi
-     done
+     update_skydns_client # and this
+#      update_ejbca_deploy
+#     regex_on='BUILD SUCCESSFUL'
+#     regex_off='BUILD FAILED'
+#     tail /tmp/ant-deploy.log -n0 -F | while read line; do
+#       if [[ $line =~ $regex_on ]]; then
+#         pkill -9 -P $$ tail
+#         update_ejbca_install
+#         update_ejbca_scep
+#         update_ejbca_restart
+#       elif [[ $line =~ $regex_off ]]; then
+#         pkill -9 -P $$ tail
+#         echo "Failed aborting, ${regex_off}"
+#       fi
     ;;
 
-  skydns_client)
+  app_client)
     update_puppet
-    update_docker_client
+    update_ife_toolbelt_client
     ;;
 
 esac

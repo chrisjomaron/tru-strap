@@ -1,4 +1,11 @@
 ---
+classes:
+  - role::ife_toolbelt_client
+profile::ife_toolbelt_client::entries:
+  gw.fe.msm.internal:
+    x509_cn: "*.gw.fe.msm.internal"
+    combined_password : "8ruNestu"
+    challenge_password : "sW6Qecra"
 profile::skydns_client::entries:
   gw.fe.msm.internal:
     host: "%{::ipaddress}"

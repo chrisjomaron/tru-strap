@@ -1,6 +1,7 @@
 *.vagrant
 *.box
 *.pem
+*.librarian
 .DS_Store
 
 superadmin.p12

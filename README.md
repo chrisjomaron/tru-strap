@@ -95,6 +95,15 @@ docker search pauldavidgilligan
 
 docker pull pauldavidgilligan/docker-centos6-base-image
 ```
+
+### Docker Service
+
+For private docker repos you will need to set the following:
+```
+vi /etc/sysconfig/docker
+other_args=--insecure-registry=registry1-eu1.moneysupermarket.com:5000
+```
+
 ### OS User ID
 
 | Account       | ID            |

@@ -2,9 +2,7 @@ class profile::ife_toolbelt_client($entries){
   include ::toolbelt
 
   $defaults = {
-    version               => '1.1.8',
     alias_ca              => 'root.msm.internal',
-    path                  => '/etc/pki/msm',
     truststore_password   => 'changeit',
     combined_algorithm    => 'SHA256WithRSAEncryption',
     key_size              => '4096',
@@ -15,10 +13,11 @@ class profile::ife_toolbelt_client($entries){
     x509_s                => 'Cheshire',
     x509_c                => 'UK',
     ejbca_url             => 'http://ejbca.msm.internal:8080/ejbca/publicweb/apply/scep/pkiclient.exe',
-    ejbca_ca              => 'MSMCA'
+    ejbca_ca              => 'MSMCA',
+    mode                  => compute
   }
 
-  create_resources ( toolbelt::client, $entries, $defaults )
+  create_resources ( toolbelt::client::compiled, $entries, $defaults )
 
 }
 

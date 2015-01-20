@@ -14,10 +14,10 @@ class profile::ife_toolbelt_client($entries){
     x509_c                => 'UK',
     ejbca_url             => 'http://ejbca.msm.internal:8080/ejbca/publicweb/apply/scep/pkiclient.exe',
     ejbca_ca              => 'MSMCA',
-    mode                  => compute
+    mode                  => 'compute'
   }
 
-  create_resources ( toolbelt::client::compiled, $entries, $defaults )
+  create_resources ( toolbelt::client::binary, $entries, $defaults )
 
 }
 

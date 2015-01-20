@@ -1,17 +1,15 @@
 forge "https://forgeapi.puppetlabs.com"
 
 # Base modules
+mod "puppetlabs/stdlib", "4.3.2"
 mod "saz/timezone", "3.0.1"
 mod "saz/rsyslog", "3.1.0"
 mod "thias/postfix", "0.3.2"
 mod "thias/sysctl", "0.3.2"
 mod "spiette/selinux", "0.5.4"
 mod "stahnma/epel", "1.0.0"
-mod "puppetlabs/stdlib", "4.3.2"
 mod "maestrodev/wget", "1.5.6"
 mod "erwbgy/limits", "0.3.1"
-mod "puppetlabs/vcsrepo", "1.2.0"
-mod "basti1302/wait_for", "0.3.0"
 
 # internal
 mod "pauldavidgilligan-msm/puppet-ife-toolbelt",

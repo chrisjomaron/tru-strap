@@ -20,7 +20,7 @@ config.vm.define "#{EJBCA_FQDN}" do |m|
   # Docker provider
   m.vm.provider "docker" do |vm|
     vm.name            = "#{EJBCA_FQDN}"
-    vm.image           = "pauldavidgilligan/docker-centos6-ejbca-mysql"
+    vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-ejbca-mysql"
     vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{EJBCA_FQDN}"]
     vm.vagrant_machine = "dockerhost"

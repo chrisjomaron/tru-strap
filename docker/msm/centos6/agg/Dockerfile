@@ -1,4 +1,4 @@
-FROM pauldavidgilligan/docker-centos6-puppet-ruby215
+FROM registry1-eu1.moneysupermarket.com:5000/docker-centos6-puppet-ruby215
 MAINTAINER Paul Gilligan<Paul.Gilligan@moneysupermarket.com>
 
 # -----------------------------------------------------------------------------

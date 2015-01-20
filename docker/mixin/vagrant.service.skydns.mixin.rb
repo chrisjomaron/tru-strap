@@ -14,7 +14,7 @@ SKYDNS_FQDN = "#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}"
 config.vm.define "#{SKYDNS_FQDN}" do |m|
   m.vm.provider "docker" do |vm|
     vm.name            = "#{SKYDNS_FQDN}"
-    vm.image           = "pauldavidgilligan/go-skydns"
+    vm.image           = "registry1-eu1.moneysupermarket.com:5000/go-skydns"
     vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{SKYDNS_FQDN}"]
     vm.vagrant_machine = "dockerhost"

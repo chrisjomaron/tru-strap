@@ -15,7 +15,7 @@ TANGO_BE_FQDN = "#{TANGO_NAME}.#{TRUSTRAP_BE_DOMAIN}"
 config.vm.define "#{TANGO_FE_FQDN}" do |m|
   m.vm.provider "docker" do |vm|
     vm.name            = "#{TANGO_FE_FQDN}"
-    vm.image           = "pauldavidgilligan/docker-centos6-haproxy"
+    vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-haproxy"
     vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{TANGO_FE_FQDN}"]
     vm.vagrant_machine = "dockerhost"
@@ -39,7 +39,7 @@ end
 config.vm.define "#{TANGO_BE_FQDN}" do |m|
   m.vm.provider "docker" do |vm|
     vm.name            = "#{TANGO_BE_FQDN}"
-    vm.image           = "pauldavidgilligan/docker-centos6-haproxy"
+    vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-haproxy"
     vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{TANGO_BE_FQDN}"]
     vm.vagrant_machine = "dockerhost"

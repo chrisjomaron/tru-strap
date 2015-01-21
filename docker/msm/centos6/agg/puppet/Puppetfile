@@ -14,13 +14,10 @@ mod "erwbgy/limits", "0.3.1"
 # internal
 mod "pauldavidgilligan-msm/puppet-ife-toolbelt",
   :git => "git@github.com:pauldavidgilligan-msm/puppet-ife-toolbelt.git"
+mod "pauldavidgilligan-msm/puppet-maven",
+  :git => "git@github.com:pauldavidgilligan-msm/puppet-maven.git"
 
 mod "MSMFG/skydns_client",
   :git => "git@github.com:MSMFG/puppet-skydns-client.git"
 
-# external
-mod "puppetlabs/java", "1.2.0"
-mod "maestrodev/maven",
-  :git => "https://github.com/maestrodev/puppet-maven.git",
-  :ref => "v1.3.0"
 

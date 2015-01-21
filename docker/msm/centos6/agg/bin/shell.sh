@@ -36,7 +36,7 @@ cat <<EOF
     -h| --help             this usage text.
     -v| --version          the version.
     -n| --name             the skydns name.
-    -m| --mode             the processing mode (hosts, resolv, start, config, ejbca, app_client).
+    -m| --mode             the processing mode (hosts, resolv, start, config, ejbca, app_client, web_client).
     -d| --domain           the dns domain name (msm.internal, tsm.internal).
     
 EOF
@@ -120,6 +120,11 @@ function update_skydns_client {
 function update_ife_toolbelt_client {
   puppet apply --debug --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e "include role::ife_toolbelt_client"
 }
+
+function update_ife_dropwizard {
+  puppet apply --debug --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e "include role::ife_dropwizard"
+}
+
 
 function update_ejbca_mysql {
   RESULT=`pgrep mysqld`
@@ -218,7 +223,7 @@ if [[ ${SKYDNS_NAME} == "" || ${SHELL_MODE} == "" || ${DOMAIN_NAME} == "" ]]; th
   exit 1
 fi
 
-MODES="hosts resolv start config ejbca app_client"
+MODES="hosts resolv start config ejbca app_client web_client"
 if echo "$MODES" | grep -q "$SHELL_MODE"; then
   echo "Mode is ${SHELL_MODE}"
 else
@@ -274,6 +279,11 @@ case "${SHELL_MODE}" in
   app_client)
     update_puppet
     update_ife_toolbelt_client
+    ;;
+
+  web_client)
+    update_puppet
+    update_ife_dropwizard
     ;;
 
 esac

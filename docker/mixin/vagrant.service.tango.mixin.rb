@@ -72,8 +72,8 @@ WEB_3_FQDN="nc.web.#{TRUSTRAP_BE_DOMAIN}"
 config.vm.define "#{WEB_1_FQDN}" do |m|
   m.vm.provider "docker" do |vm|
     vm.name            = "#{WEB_1_FQDN}"
-    vm.image           = "micktwomey/sample-dropwizard-service"
-    vm.has_ssh         = false
+    vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-dropwizard"
+    vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{WEB_1_FQDN}"]
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
@@ -85,7 +85,7 @@ config.vm.define "#{WEB_1_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m web_client -d #{TRUSTRAP_DOMAIN}"
   end
   m.vm.provision :shell, inline: "echo Node #{WEB_1_FQDN} is very handsome!"
 end

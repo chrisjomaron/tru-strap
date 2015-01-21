@@ -1,0 +1,22 @@
+---
+classes:
+  - role::ife_toolbelt_client
+  - role::ife_dropwizard
+profile::ife_toolbelt_client::entries:
+  na.web.be.msm.internal:
+    x509_cn: "*.na.web.be.msm.internal"
+    combined_password : "8ruNestu"
+    challenge_password : "sW6Qecra"
+profile::ife_dropwizard::entries:
+  na.web.be.msm.internal:
+    x509_cn: "*.na.web.be.msm.internal"
+    combined_password : "8ruNestu"
+    http_port: 6445
+    https_port : 7445
+    https_admin : 8445
+profile::skydns_client::entries:
+  na.web.be.msm.internal:
+    host: "%{::ipaddress}"
+    ttl: 360
+    ttl_refresh: true
+    weight: 100

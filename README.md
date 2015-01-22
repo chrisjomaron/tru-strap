@@ -194,13 +194,19 @@ https://moneysupermarket.atlassian.net/wiki/pages/viewpage.action?pageId=2392191
 ## Docker pull(s)
 
 ```
-docker pull pauldavidgilligan/go-skydns
-docker pull pauldavidgilligan/docker-centos6-puppet-ruby215
+docker pull pauldavidgilligan/go-skydns:latest
+docker pull registry1-eu1.moneysupermarket.com:5000/docker-centos6-base-image:latest
+docker pull registry1-eu1.moneysupermarket.com:5000/docker-centos6-puppet-ruby215:latest
+docker pull registry1-eu1.moneysupermarket.com:5000/docker-centos6-ejbca-mysql:latest
+docker pull registry1-eu1.moneysupermarket.com:5000/docker-centos6-haproxy:latest
 ```
+> Maintained in bin/images.sh
 
 ## Git Authentication
 No provide keys are stored in the VM and ssh key forwarding is being used. You will need to fork
 msm-provisioning, in this example, and setup you own keys on your local machine.
+
+https://developer.github.com/guides/using-ssh-agent-forwarding/
 
 ## Environment Variables
 This Vagrantfile requires a few environment variables to be set.

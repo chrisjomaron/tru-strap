@@ -83,7 +83,7 @@ yum install epel-release -y
 
 yum update
 
-rpm -ivh https://dl.bintray.com/mitchellh/vagrant/vagrant_1.6.5_x86_64.rpm
+rpm -ivh https://dl.bintray.com/mitchellh/vagrant/vagrant_1.7.2_x86_64.rpm
 
 yum erase docker
 yum -y install docker-io

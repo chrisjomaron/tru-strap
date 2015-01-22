@@ -96,8 +96,8 @@ end
 config.vm.define "#{WEB_2_FQDN}" do |m|
   m.vm.provider "docker" do |vm|
     vm.name            = "#{WEB_2_FQDN}"
-    vm.image           = "micktwomey/sample-dropwizard-service"
-    vm.has_ssh         = false
+    vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-dropwizard"
+    vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{WEB_2_FQDN}"]
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
@@ -118,8 +118,8 @@ end
 config.vm.define "#{WEB_3_FQDN}" do |m|
   m.vm.provider "docker" do |vm|
     vm.name            = "#{WEB_3_FQDN}"
-    vm.image           = "micktwomey/sample-dropwizard-service"
-    vm.has_ssh         = false
+    vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-dropwizard"
+    vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{WEB_3_FQDN}"]
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"

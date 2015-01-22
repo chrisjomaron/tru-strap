@@ -2,6 +2,7 @@
 *.box
 *.pem
 *.librarian
+vagrant_rsa*
 .DS_Store
 
 superadmin.p12

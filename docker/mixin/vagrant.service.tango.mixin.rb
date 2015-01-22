@@ -31,6 +31,7 @@ config.vm.define "#{TANGO_FE_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
+    eval(IO.read("../../../mixin/vagrant.github.key.mixin.rb"), binding)
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
   end
   m.vm.provision :shell, inline: "echo Node #{TANGO_FE_FQDN} is very handsome!"

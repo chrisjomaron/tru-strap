@@ -105,9 +105,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.proxy.no_proxy = "localhost,127.0.0.1"
   end 
 
-  config.ssh.username = "dev-ops"
-  config.ssh.pty = true
-  config.ssh.forward_agent = true
+  config.ssh.username         = "dev-ops"
+  config.ssh.pty              = true
+  config.ssh.forward_agent    = false
+  config.ssh.private_key_path = "vagrant_rsa"
 
   # -------------------------------------------
   # Provision Network Serivices

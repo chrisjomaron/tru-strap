@@ -67,7 +67,7 @@ function update_resolv {
   echo "Processing ${CONF}"
   SKYDNS=$(ping -c 1 ${SKYDNS_NAME}|grep "PING" | sed -E 's/PING .* .([0-9.]+). .*/\1/g') > /dev/null
   if [[ ! -z "${SKYDNS}" ]]; then
-    echo "Found ${SKYDNS_NAME} at ${SKYDNS}, updating ${CONF}."
+    echo "Found ${SKYDNS_NAME} at ${SKYDNS}, updating ${CONF}"
     sed -e "s/\(nameserver\) .*/\1 ${SKYDNS}/" ${CONF} > /tmp/resolv.conf
     echo "nameserver 8.8.8.8" >> /tmp/resolv.conf
     cp /tmp/resolv.conf ${CONF}

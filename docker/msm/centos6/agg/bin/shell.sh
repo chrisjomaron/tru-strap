@@ -118,7 +118,7 @@ function update_skydns_client {
 }
 
 function update_ife_toolbelt_client {
-  puppet apply --debug --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e "include role::ife_toolbelt_client"
+  puppet apply --debug --evaltrace --modulepath=/home/dev-ops/etc/puppet/modules-contrib --hiera_config=/home/dev-ops/etc/puppet/hiera.yaml -e "include role::ife_toolbelt_client"
 }
 
 function update_ife_dropwizard {

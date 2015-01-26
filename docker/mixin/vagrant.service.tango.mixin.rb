@@ -78,6 +78,7 @@ config.vm.define "#{WEB_1_FQDN}" do |m|
     vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{WEB_1_FQDN}"]
     vm.vagrant_machine = "dockerhost"
+    vm.ports = [ "6445:6445", "7445:7445", "8445:8445" ]
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
     if TRUSTRAP_WITH_SKYDNS
       vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
@@ -100,6 +101,7 @@ config.vm.define "#{WEB_2_FQDN}" do |m|
     vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{WEB_2_FQDN}"]
     vm.vagrant_machine = "dockerhost"
+    vm.ports = [ "6446:6446", "7446:7446", "8446:8446" ]
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
     if TRUSTRAP_WITH_SKYDNS
       vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
@@ -122,6 +124,7 @@ config.vm.define "#{WEB_3_FQDN}" do |m|
     vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{WEB_3_FQDN}"]
     vm.vagrant_machine = "dockerhost"
+    vm.ports = [ "6447:6447", "7447:7447", "8447:8447" ]
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
     if TRUSTRAP_WITH_SKYDNS
       vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")

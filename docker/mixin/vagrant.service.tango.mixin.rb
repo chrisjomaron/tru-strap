@@ -17,7 +17,7 @@ config.vm.define "#{TANGO_FE_FQDN}" do |m|
     vm.name            = "#{TANGO_FE_FQDN}"
     vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-haproxy"
     vm.has_ssh         = true
-    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{TANGO_FE_FQDN}"]
+    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--hostname=#{TANGO_FE_FQDN}"]
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
     if TRUSTRAP_WITH_SKYDNS
@@ -29,7 +29,7 @@ config.vm.define "#{TANGO_FE_FQDN}" do |m|
   end
   if TRUSTRAP_WITH_SKYDNS
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN} -o #{TRUSTRAP_NAMESERVER}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
     eval(IO.read("../../../mixin/vagrant.github.key.mixin.rb"), binding)
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
@@ -42,7 +42,7 @@ config.vm.define "#{TANGO_BE_FQDN}" do |m|
     vm.name            = "#{TANGO_BE_FQDN}"
     vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-haproxy"
     vm.has_ssh         = true
-    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{TANGO_BE_FQDN}"]
+    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--hostname=#{TANGO_BE_FQDN}"]
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
     if TRUSTRAP_WITH_SKYDNS
@@ -54,7 +54,7 @@ config.vm.define "#{TANGO_BE_FQDN}" do |m|
   end
   if TRUSTRAP_WITH_SKYDNS
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN} -o #{TRUSTRAP_NAMESERVER}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
     eval(IO.read("../../../mixin/vagrant.github.key.mixin.rb"), binding)
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
@@ -76,7 +76,7 @@ config.vm.define "#{WEB_1_FQDN}" do |m|
     vm.name            = "#{WEB_1_FQDN}"
     vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-dropwizard"
     vm.has_ssh         = true
-    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{WEB_1_FQDN}"]
+    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--hostname=#{WEB_1_FQDN}"]
     vm.vagrant_machine = "dockerhost"
     vm.ports = [ "6445:6445", "7445:7445", "8445:8445" ]
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
@@ -86,7 +86,7 @@ config.vm.define "#{WEB_1_FQDN}" do |m|
   end
   if TRUSTRAP_WITH_SKYDNS
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN} -o #{TRUSTRAP_NAMESERVER}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
     eval(IO.read("../../../mixin/vagrant.github.key.mixin.rb"), binding)
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m web_client -d #{TRUSTRAP_DOMAIN}"
@@ -99,7 +99,7 @@ config.vm.define "#{WEB_2_FQDN}" do |m|
     vm.name            = "#{WEB_2_FQDN}"
     vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-dropwizard"
     vm.has_ssh         = true
-    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{WEB_2_FQDN}"]
+    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--hostname=#{WEB_2_FQDN}"]
     vm.vagrant_machine = "dockerhost"
     vm.ports = [ "6446:6446", "7446:7446", "8446:8446" ]
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
@@ -109,7 +109,7 @@ config.vm.define "#{WEB_2_FQDN}" do |m|
   end
   if TRUSTRAP_WITH_SKYDNS
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN} -o #{TRUSTRAP_NAMESERVER}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
     eval(IO.read("../../../mixin/vagrant.github.key.mixin.rb"), binding)
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
@@ -122,7 +122,7 @@ config.vm.define "#{WEB_3_FQDN}" do |m|
     vm.name            = "#{WEB_3_FQDN}"
     vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-dropwizard"
     vm.has_ssh         = true
-    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{WEB_3_FQDN}"]
+    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--hostname=#{WEB_3_FQDN}"]
     vm.vagrant_machine = "dockerhost"
     vm.ports = [ "6447:6447", "7447:7447", "8447:8447" ]
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
@@ -132,7 +132,7 @@ config.vm.define "#{WEB_3_FQDN}" do |m|
   end
   if TRUSTRAP_WITH_SKYDNS
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN} -o #{TRUSTRAP_NAMESERVER}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
     eval(IO.read("../../../mixin/vagrant.github.key.mixin.rb"), binding)
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"

@@ -22,7 +22,7 @@ config.vm.define "#{EJBCA_FQDN}" do |m|
     vm.name            = "#{EJBCA_FQDN}"
     vm.image           = "registry1-eu1.moneysupermarket.com:5000/docker-centos6-ejbca-mysql"
     vm.has_ssh         = true
-    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--dns=8.8.8.8", "--hostname=#{EJBCA_FQDN}"]
+    vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--hostname=#{EJBCA_FQDN}"]
     vm.vagrant_machine = "dockerhost"
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
     if TRUSTRAP_WITH_SKYDNS
@@ -31,7 +31,7 @@ config.vm.define "#{EJBCA_FQDN}" do |m|
   end
   if TRUSTRAP_WITH_SKYDNS
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m hosts -d #{TRUSTRAP_DOMAIN}"
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN} -o #{TRUSTRAP_NAMESERVER}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
   end
   m.vm.provision :shell, inline: "echo \"After skydns registration, ant deploy(approx 1 min), wait to complete then ant install(approx 2mins)\""

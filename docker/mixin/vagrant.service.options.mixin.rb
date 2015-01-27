@@ -14,6 +14,15 @@ services.each do |service, params|
 
   if service == "#{TRUSTRAP_ENV}-#{TRUSTRAP_SERVICE}"
 
+    # nameserver (local office DNS)
+    nameserver = params.detect {|param| param['nameserver']}
+    TRUSTRAP_NAMESERVER = nameserver['nameserver']
+    if TRUSTRAP_NAMESERVER
+      puts "TRUSTRAP_NAMESERVER     #{TRUSTRAP_NAMESERVER}"
+    else
+      abort("Nameserver (office or local  DNS) variable: 'nameserver' is not set in file #{YAML_OPTIONS}, exiting ...")
+    end
+
     # domain
     domain = params.detect {|param| param['domain']}
     TRUSTRAP_DOMAIN = domain['domain']

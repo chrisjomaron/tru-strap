@@ -38,6 +38,7 @@ cat <<EOF
     -n| --name             the skydns name.
     -m| --mode             the processing mode (hosts, resolv, start, config, ejbca, app_client, web_client).
     -d| --domain           the dns domain name (msm.internal, tsm.internal).
+    -o| --nameserver       the local DNS nameserver, resolv mode only.
     
 EOF
 }
@@ -68,8 +69,8 @@ function update_resolv {
   SKYDNS=$(ping -c 1 ${SKYDNS_NAME}|grep "PING" | sed -E 's/PING .* .([0-9.]+). .*/\1/g') > /dev/null
   if [[ ! -z "${SKYDNS}" ]]; then
     echo "Found ${SKYDNS_NAME} at ${SKYDNS}, updating ${CONF}"
-    sed -e "s/\(nameserver\) .*/\1 ${SKYDNS}/" ${CONF} > /tmp/resolv.conf
-    echo "nameserver 8.8.8.8" >> /tmp/resolv.conf
+    echo "nameserver ${NAMESERVER}"  > /tmp/resolv.conf
+    echo "nameserver ${SKYDNS}"     >> /tmp/resolv.conf
     cp /tmp/resolv.conf ${CONF}
     chmod 644 ${CONF}
     chown root:root ${CONF}
@@ -205,6 +206,11 @@ while test -n "$1"; do
     shift
     ;;
 
+  --nameserver|-o)
+    NAMESERVER=$2
+    shift
+    ;;
+
   *)
     echo ", unknown argument: $1"
     usage
@@ -221,6 +227,14 @@ if [[ ${SKYDNS_NAME} == "" || ${SHELL_MODE} == "" || ${DOMAIN_NAME} == "" ]]; th
   echo ", missing argument(s)."
   usage
   exit 1
+fi
+
+if [ "$SHELL_MODE" == "resolv" ]; then
+  if [ -z "$NAMESERVER" ]; then
+    echo "Parameter 'nameserver' cannot be empty for mode resolv"
+    exit 1
+  fi
+  echo "Mode is resolv, using local nameserver entry ${NAMESERVER}"
 fi
 
 MODES="hosts resolv start config ejbca app_client web_client"

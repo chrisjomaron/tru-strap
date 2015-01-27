@@ -1,5 +1,6 @@
 services:
   hvd-agg:
+    - nameserver: 10.10.3.30
     - domain: msm.internal
     - fe-domain: fe.msm.internal
     - be-domain: be.msm.internal

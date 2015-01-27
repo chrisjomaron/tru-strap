@@ -11,9 +11,9 @@ profile::ife_dropwizard::entries:
   nb.web.be.msm.internbl:
     x509_cn: "*.nb.web.be.msm.internbl"
     combined_password : "8ruNestu"
-    http_port: 6445
-    https_port : 7445
-    https_admin : 8445
+    http_port: 6446
+    https_port : 7446
+    https_admin : 8446
 profile::skydns_client::entries:
   nb.web.be.msm.internbl:
     host: "%{::ipaddress}"

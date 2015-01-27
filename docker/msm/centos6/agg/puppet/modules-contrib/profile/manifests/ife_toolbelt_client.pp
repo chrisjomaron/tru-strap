@@ -17,7 +17,7 @@ class profile::ife_toolbelt_client($entries){
     mode                  => 'compute'
   }
 
-  create_resources ( toolbelt::client::binary_local, $entries, $defaults )
+  create_resources ( toolbelt::client::binary, $entries, $defaults )
 
 }
 

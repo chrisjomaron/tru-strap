@@ -69,8 +69,9 @@ function update_resolv {
   SKYDNS=$(ping -c 1 ${SKYDNS_NAME}|grep "PING" | sed -E 's/PING .* .([0-9.]+). .*/\1/g') > /dev/null
   if [[ ! -z "${SKYDNS}" ]]; then
     echo "Found ${SKYDNS_NAME} at ${SKYDNS}, updating ${CONF}"
-    echo "nameserver ${NAMESERVER}"  > /tmp/resolv.conf
+    echo "search ${DOMAIN_NAME}"     > /tmp/resolv.conf
     echo "nameserver ${SKYDNS}"     >> /tmp/resolv.conf
+    echo "nameserver ${NAMESERVER}" >> /tmp/resolv.conf
     cp /tmp/resolv.conf ${CONF}
     chmod 644 ${CONF}
     chown root:root ${CONF}

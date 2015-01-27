@@ -1,21 +1,21 @@
 ---
-classes:
+clases:
   - role::ife_toolbelt_client
   - role::ife_dropwizard
 profile::ife_toolbelt_client::entries:
-  nb.web.be.msm.internbl:
-    x509_cn: "*.nb.web.be.msm.internbl"
+  nb.web.be.msm.internal:
+    x509_cn: "*.nb.web.be.msm.internal"
     combined_password : "8ruNestu"
     challenge_password : "sW6Qecra"
 profile::ife_dropwizard::entries:
-  nb.web.be.msm.internbl:
-    x509_cn: "*.nb.web.be.msm.internbl"
+  nb.web.be.msm.internal:
+    x509_cn: "*.nb.web.be.msm.internal"
     combined_password : "8ruNestu"
     http_port: 6446
     https_port : 7446
     https_admin : 8446
 profile::skydns_client::entries:
-  nb.web.be.msm.internbl:
+  nb.web.be.msm.internal:
     host: "%{::ipaddress}"
     ttl: 360
     ttl_refresh: true

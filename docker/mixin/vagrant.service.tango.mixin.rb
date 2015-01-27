@@ -19,6 +19,7 @@ config.vm.define "#{TANGO_FE_FQDN}" do |m|
     vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--hostname=#{TANGO_FE_FQDN}"]
     vm.vagrant_machine = "dockerhost"
+    vm.ports = [ "443:443" ]
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
     if TRUSTRAP_WITH_SKYDNS
       vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
@@ -44,6 +45,7 @@ config.vm.define "#{TANGO_BE_FQDN}" do |m|
     vm.has_ssh         = true
     vm.create_args = ["--privileged", "--dns-search=#{TRUSTRAP_DOMAIN}", "--hostname=#{TANGO_BE_FQDN}"]
     vm.vagrant_machine = "dockerhost"
+    vm.ports = [ "9443:9443" ]
     vm.vagrant_vagrantfile = "../../Vagrantfile.proxy"
     if TRUSTRAP_WITH_SKYDNS
       vm.link("#{SKYDNS_NAME}.#{TRUSTRAP_DOMAIN}:#{SKYDNS_NAME}")
@@ -112,7 +114,7 @@ config.vm.define "#{WEB_2_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN} -o #{TRUSTRAP_NAMESERVER}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
     eval(IO.read("../../../mixin/vagrant.github.key.mixin.rb"), binding)
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m web_client -d #{TRUSTRAP_DOMAIN}"
   end
   m.vm.provision :shell, inline: "echo Node #{WEB_2_FQDN} is very handsome!"
 end
@@ -135,7 +137,7 @@ config.vm.define "#{WEB_3_FQDN}" do |m|
     m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m resolv -d #{TRUSTRAP_DOMAIN} -o #{TRUSTRAP_NAMESERVER}"
     m.vm.provision :file, source: "puppet", destination: "etc/puppet/"
     eval(IO.read("../../../mixin/vagrant.github.key.mixin.rb"), binding)
-    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m app_client -d #{TRUSTRAP_DOMAIN}"
+    m.vm.provision :shell, :path => "bin/shell.sh", :args => "-n #{SKYDNS_NAME} -m web_client -d #{TRUSTRAP_DOMAIN}"
   end
   m.vm.provision :shell, inline: "echo Node #{WEB_3_FQDN} is very handsome!"
 end
